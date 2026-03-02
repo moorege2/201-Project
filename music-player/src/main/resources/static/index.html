@@ -1,0 +1,51 @@
+
+<!-- Prompting users to login -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+
+<h1>Login 🎵</h1>
+
+<form onsubmit="return loginUser()">
+    <label>Username:</label><br>
+    <input type="text" id="username" required><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" id="password" required><br><br>
+
+    <button type="submit">Login</button>
+</form>
+
+<p id="message"></p>
+
+<p>Don't have an account? <a href="register.html">Register here</a></p>
+
+<script>
+function loginUser() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+
+    let storedPassword = localStorage.getItem(username);
+
+    if (storedPassword === null) {
+        document.getElementById("message").innerText = "User does not exist!";
+        return false;
+    }
+
+    if (storedPassword !== password) {
+        document.getElementById("message").innerText = "Incorrect password!";
+        return false;
+    }
+
+    alert("Login successful!");
+    window.location.href = "home.html";
+    return false;
+}
+</script>
+
+</body>
+</html>
