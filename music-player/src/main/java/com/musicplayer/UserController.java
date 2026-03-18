@@ -7,47 +7,33 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     // ================= GET ALL USERS =================
     @GetMapping
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     // ================= GET USER BY USERNAME =================
     @GetMapping("/{username}")
     public User getUserByUsername(@PathVariable String username) {
-        return userRepository.findByUsername(username);
+        return userService.getUserByUsername(username);
     }
 
     // ================= REGISTER NEW USER =================
     @PostMapping("/register")
     public String registerUser(@RequestBody User newUser) {
-        // Check if username or email already exists
-        if (userRepository.findByUsername(newUser.getUsername()) != null) {
-            return "Username already taken";
-        }
-        if (userRepository.findByEmail(newUser.getEmail()) != null) {
-            return "Email already used";
-        }
-        userRepository.save(newUser);
-        return "Registration successful";
+        return userService.registerUser(newUser);
     }
 
-    // ================= LOGIN USER (simplified) =================
+    // ================= LOGIN =================
     @PostMapping("/login")
     public String loginUser(@RequestBody User loginUser) {
-        User user = userRepository.findByUsername(loginUser.getUsername());
-        if (user == null) {
-            return "User does not exist";
-        }
-        if (!user.getPassword().equals(loginUser.getPassword())) {
-            return "Incorrect password";
-        }
-        return "Login successful";
+        return userService.loginUser(loginUser.getUsername(), loginUser.getPassword());
     }
 }

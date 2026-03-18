@@ -1,67 +1,87 @@
 package com.musicplayer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/playlists")
+@CrossOrigin(origins = "*")
 public class PlaylistController {
 
     @Autowired
-    private PlaylistRepository playlistRepository;
+    private PlaylistService playlistService;
 
     // ===== Get all playlists =====
     @GetMapping("/")
     public List<Playlist> getAllPlaylists() {
-        return playlistRepository.findAll();
+        return playlistService.getAllPlaylists();
     }
 
     // ===== Get playlist by ID =====
     @GetMapping("/{id}")
-    public Optional<Playlist> getPlaylistById(@PathVariable String id) {
-        return playlistRepository.findById(id);
+    public ResponseEntity<Playlist> getPlaylistById(@PathVariable String id) {
+        return playlistService.getPlaylistById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // ===== Find playlists by name =====
     @GetMapping("/search")
     public List<Playlist> getPlaylistsByName(@RequestParam String name) {
-        return playlistRepository.findByName(name);
+        return playlistService.getPlaylistsByName(name);
     }
 
     // ===== Get playlists by privacy =====
     @GetMapping("/private")
     public List<Playlist> getPlaylistsByPrivacy(@RequestParam boolean isPrivate) {
-        return playlistRepository.findByIsPrivate(isPrivate);
+        return playlistService.getPlaylistsByPrivacy(isPrivate);
+    }
+
+    // ===== Get public playlists for a user =====
+    @GetMapping("/user/{username}/public")
+    public List<Playlist> getPublicPlaylistsForUser(@PathVariable String username) {
+        return playlistService.getPublicPlaylistsForUser(username);
     }
 
     // ===== Create a new playlist =====
     @PostMapping("/")
-    public Playlist createPlaylist(@RequestBody Playlist playlist) {
-        return playlistRepository.save(playlist);
+    public Playlist createPlaylist(@RequestBody Playlist playlist,
+                                   @RequestParam String username) {
+        return playlistService.createPlaylist(playlist, username);
     }
 
     // ===== Update an existing playlist =====
     @PutMapping("/{id}")
-    public Playlist updatePlaylist(@PathVariable String id, @RequestBody Playlist updatedPlaylist) {
-        return playlistRepository.findById(id)
-                .map(existing -> {
-                    existing.setName(updatedPlaylist.getName());
-                    existing.setPrivate(updatedPlaylist.isPrivate());
-                    existing.setSongIds(updatedPlaylist.getSongIds());
-                    return playlistRepository.save(existing);
-                })
-                .orElseGet(() -> {
-                    updatedPlaylist.setId(id);
-                    return playlistRepository.save(updatedPlaylist);
-                });
+    public ResponseEntity<Playlist> updatePlaylist(@PathVariable String id,
+                                                    @RequestBody Playlist updatedPlaylist) {
+        return ResponseEntity.ok(playlistService.updatePlaylist(id, updatedPlaylist));
+    }
+
+    // ===== Add a song to a playlist =====
+    @PutMapping("/{id}/songs/{songId}")
+    public ResponseEntity<Playlist> addSong(@PathVariable String id,
+                                             @PathVariable String songId) {
+        return playlistService.addSongToPlaylist(id, songId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // ===== Remove a song from a playlist =====
+    @DeleteMapping("/{id}/songs/{songId}")
+    public ResponseEntity<Playlist> removeSong(@PathVariable String id,
+                                                @PathVariable String songId) {
+        return playlistService.removeSongFromPlaylist(id, songId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // ===== Delete a playlist =====
     @DeleteMapping("/{id}")
-    public String deletePlaylist(@PathVariable String id) {
-        playlistRepository.deleteById(id);
-        return "Playlist with id " + id + " deleted!";
+    public String deletePlaylist(@PathVariable String id,
+                                  @RequestParam String username) {
+        return playlistService.deletePlaylist(id, username);
     }
 }

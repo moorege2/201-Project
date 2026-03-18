@@ -58,7 +58,8 @@ public class UserService {
         // NOTE: In production, use BCrypt.matches() here instead of plain equals
         if (!user.getPassword().equals(password)) return "Incorrect password.";
 
-        return "Login successful.";
+        return "Login successful";
+
     }
 
     // ===== Update user profile =====

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,60 +15,59 @@ public class SongController {
     @Autowired
     private SongService songService;
 
-    // Get all songs
+    // ===== Get all songs =====
     @GetMapping
     public List<Song> getAllSongs() {
         return songService.getAllSongs();
     }
 
-    // Get songs by artist
+    // ===== Get song by ID =====
+    @GetMapping("/{id}")
+    public ResponseEntity<Song> getSongById(@PathVariable String id) {
+        return songService.getSongById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }  // ← this closing brace was missing
+
+    // ===== Get songs by artist =====
     @GetMapping("/artist/{artist}")
     public ArrayList<Song> getByArtist(@PathVariable String artist) {
-        return songRepository.findByArtist(artist);
+        return songService.getSongsByArtist(artist);  // ← fixed
     }
 
-    // Get songs by genre
+    // ===== Get songs by genre =====
     @GetMapping("/genre/{genre}")
     public ArrayList<Song> getByGenre(@PathVariable String genre) {
-        return songRepository.findByGenre(genre);
+        return songService.getSongsByGenre(genre);  // ← fixed
     }
 
-    // Get songs by mood
+    // ===== Get songs by mood =====
     @GetMapping("/mood/{mood}")
     public ArrayList<Song> getByMood(@PathVariable String mood) {
-        return songRepository.findByMood(mood);
+        return songService.getSongsByMood(mood);  // ← fixed
     }
 
-    // Add a new song
+    // ===== Get songs by title =====
+    @GetMapping("/title/{title}")
+    public ArrayList<Song> getByTitle(@PathVariable String title) {
+        return songService.getSongsByTitle(title);
+    }
+
+    // ===== Add a new song =====
     @PostMapping
     public Song addSong(@RequestBody Song newSong) {
-        return songRepository.save(newSong);
+        return songService.addSong(newSong);  // ← fixed
     }
 
-    // Get by ID 
-@GetMapping("/{id}")
-public ResponseEntity<Song> getSongById(@PathVariable String id) {
-    return songService.getSongById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+    // ===== Update a song =====
+    @PutMapping("/{id}")
+    public ResponseEntity<Song> updateSong(@PathVariable String id, @RequestBody Song updatedSong) {
+        return ResponseEntity.ok(songService.updateSong(id, updatedSong));
+    }
 
-// Get by title
-@GetMapping("/title/{title}")
-public ArrayList<Song> getByTitle(@PathVariable String title) {
-    return songService.getSongsByTitle(title);
-}
-
-// Update a song
-@PutMapping("/{id}")
-public ResponseEntity<Song> updateSong(@PathVariable String id, @RequestBody Song updatedSong) {
-    return ResponseEntity.ok(songService.updateSong(id, updatedSong));
-}
-
-// Delete a song
-@DeleteMapping("/{id}")
-public String deleteSong(@PathVariable String id) {
-    return songService.deleteSong(id);
-}
-
-
+    // ===== Delete a song =====
+    @DeleteMapping("/{id}")
+    public String deleteSong(@PathVariable String id) {
+        return songService.deleteSong(id);
+    }
 }
