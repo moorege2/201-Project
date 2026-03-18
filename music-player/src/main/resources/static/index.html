@@ -35,6 +35,7 @@ input {
     margin: 10px 0;
     border-radius: 6px;
     border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 button {
@@ -63,11 +64,9 @@ a {
 <div class="card">
     <h1>Welcome Back 🎵</h1>
 
-    <form onsubmit="return loginUser()">
-        <input type="text" id="username" placeholder="Username" required>
-        <input type="password" id="password" placeholder="Password" required>
-        <button type="submit">Log In</button>
-    </form>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Log In</button>
 
     <p id="message" style="color:red;"></p>
 
@@ -75,9 +74,14 @@ a {
 </div>
 
 <script>
-function loginUser() {
+document.getElementById("loginBtn").addEventListener("click", function() {
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        document.getElementById("message").innerText = "Please enter username and password.";
+        return;
+    }
 
     fetch("https://authentic-hope-production-6028.up.railway.app/api/users/login", {
         method: "POST",
@@ -98,11 +102,10 @@ function loginUser() {
         }
     })
     .catch(err => {
-        document.getElementById("message").innerText = "Connection error. Is the server running?";
+        console.error(err);
+        document.getElementById("message").innerText = "Connection error.";
     });
-
-    return false;
-}
+});
 </script>
 
 </body>
