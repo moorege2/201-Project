@@ -8,7 +8,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Energetic',
     dateReleased: '1983-01-02',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/55/Michael_Jackson_-_Thriller.png'
   },
 
   {
@@ -17,7 +17,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Energetic',
     dateReleased: '1975-10-31',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png'
   },
 
   {
@@ -26,7 +26,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Happy',
     dateReleased: '1976-08-27',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/a/a3/ABBA_-_The_Album.jpg'
   },
 
   {
@@ -35,7 +35,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Sad',
     dateReleased: '1992-11-03',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/4/47/Whitney_Houston_-_The_Bodyguard_Soundtrack.jpg'
   },
 
   {
@@ -44,7 +44,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Happy',
     dateReleased: '2017-01-06',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b8/Ed_Sheeran_-_Shape_of_You_%28Official_Single_Cover%29.png'
   },
 
   // Country
@@ -54,7 +54,8 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Happy',
     dateReleased: '2008-07-08',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/3c/Zac_Brown_Band_-_The_Foundation.jpg'
+
   },
 
   {
@@ -63,7 +64,8 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Sad',
     dateReleased: '1973-10-15',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/50/Jolene_album.jpg'
+
   },
 
   {
@@ -72,7 +74,8 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Calm',
     dateReleased: '1971-04-12',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/17/TakeMeHomeCountryRoads.jpg'
+
   },
 
   {
@@ -81,7 +84,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Energetic',
     dateReleased: '2005-10-26',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Carrie_Underwood_-_Some_Hearts.jpg'
   },
 
   {
@@ -90,7 +93,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Calm',
     dateReleased: '2004-08-17',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/52/Rascal_Flatts_-_Feels_Like_Today.jpg'
   },
 
   // Rock
@@ -100,7 +103,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1980-07-25',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/ACDC_Back_in_Black.jpg/220px-ACDC_Back_in_Black.jpg'
   },
 
   {
@@ -109,7 +112,8 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1987-09-28',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/6/60/GunsnRosesAppetiteforDestructionalbumcover.jpg'
+
   },
 
   {
@@ -118,7 +122,8 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1991-09-10',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b7/NirvanaNevermindalbumcover.jpg'
+
   },
 
   {
@@ -127,7 +132,8 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Calm',
     dateReleased: '1971-11-08',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/2/26/Led_Zeppelin_-_Led_Zeppelin_IV.jpg'
+
   },
 
   {
@@ -136,7 +142,8 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1981-02-09',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9a/Rush_Moving_Pictures.jpg'
+
   },
 
   // Rap
@@ -146,7 +153,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Energetic',
     dateReleased: '2024-05-04',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/30/Kendrick_Lamar_-_Not_Like_Us.png'
   },
 
   {
@@ -155,7 +162,8 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Energetic',
     dateReleased: '2002-10-28',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/7/77/Eminemloseyourself.jpg'
+
   },
 
   {
@@ -164,7 +172,8 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Sad',
     dateReleased: '2000-11-13',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/35/Eminem_-_The_Marshall_Mathers_LP_CD_cover.jpg'
+
   },
 
   {
@@ -173,7 +182,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Calm',
     dateReleased: '1993-03-09',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/53/Wu-Tang_Clan_Enter_the_Wu-Tang.jpg'
   },
 
   {
@@ -182,7 +191,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Happy',
     dateReleased: '2003-01-07',
-    imageBase64: ''
+    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b8/50cent-getrichordietryin.jpg'
   },
 
 
