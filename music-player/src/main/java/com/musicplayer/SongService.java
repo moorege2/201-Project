@@ -28,22 +28,22 @@ public class SongService {
 
     // ===== Get songs by artist =====
     public ArrayList<Song> getSongsByArtist(String artist) {
-        return songRepository.findByArtist(artist);
+        return songRepository.findByArtistIgnoreCase(artist);
     }
 
     // ===== Get songs by genre =====
     public ArrayList<Song> getSongsByGenre(String genre) {
-        return songRepository.findByGenre(genre);
+        return songRepository.findByGenreIgnoreCase(genre);
     }
 
     // ===== Get songs by mood =====
     public ArrayList<Song> getSongsByMood(String mood) {
-        return songRepository.findByMood(mood);
+        return songRepository.findByMoodIgnoreCase(mood);
     }
 
     // ===== Get songs by title =====
     public ArrayList<Song> getSongsByTitle(String title) {
-        return songRepository.findByTitle(title);
+        return songRepository.findByTitleIgnoreCase(title);
     }
 
     // ===== Add a new song =====
