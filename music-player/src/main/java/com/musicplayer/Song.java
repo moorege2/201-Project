@@ -158,13 +158,6 @@ public class Song implements Comparable<Song> {
         this.dateReleased = dateReleased;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 
     public boolean getIsFavorite() {
         return isFavorite;
@@ -172,5 +165,13 @@ public class Song implements Comparable<Song> {
 
     public void setIsFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
