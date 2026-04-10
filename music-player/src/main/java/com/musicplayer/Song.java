@@ -15,7 +15,7 @@ public class Song implements Comparable<Song> {
     private String mood;
     private String dateReleased;
     private boolean isFavorite;
-    private String imageBase64;
+    private String imageUrl;
 
     // ============ CONSTRUCTORS ============
 
@@ -33,16 +33,16 @@ public class Song implements Comparable<Song> {
      * @param genre
      * @param mood
      * @param dateReleased
-     * @param imageBased64
+     * @param imageUrl
      */
-    public Song(String title, String artist, String genre, String mood, String dateReleased, boolean isFavorite, String imageBase64) {
+    public Song(String title, String artist, String genre, String mood, String dateReleased, boolean isFavorite, String imageUrl) {
         this.setTitle(title);
         this.setArtist(artist);
         this.setGenre(genre);
         this.setMood(mood);
         this.setDateReleased(dateReleased);
         this.setIsFavorite(isFavorite);
-        this.setImageBase64(imageBase64);
+        this.setImageUrl(imageUrl);
     }
 
     public Song(String title, String artist, String genre, String mood) {
@@ -61,14 +61,14 @@ public class Song implements Comparable<Song> {
     @Override
     public String toString() {
         return String.format(
-                "Songs{id='%s', title='%s', artist='%s', genre='%s', mood='%s', dateReleased='%s', imageBase64='%s'}",
+                "Songs{id='%s', title='%s', artist='%s', genre='%s', mood='%s', dateReleased='%s', imageUrl='%s'}",
                 id,
                 title,
                 artist,
                 genre,
                 mood,
                 dateReleased,
-                imageBase64 != null ? "image present" : "no image");
+                imageUrl != null ? "image present" : "no image");
     }
 
     /**
@@ -158,12 +158,12 @@ public class Song implements Comparable<Song> {
         this.dateReleased = dateReleased;
     }
 
-    public String getImageBase64() {
-        return imageBase64;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setImageBase64(String imageBase64) {
-        this.imageBase64 = imageBase64;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public boolean getIsFavorite() {

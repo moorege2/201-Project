@@ -53,6 +53,21 @@ public class SongController {
         return songService.getSongsByTitle(title);
     }
 
+    // ===== Search songs title =====
+    @GetMapping("/search")
+    public List<Song> search(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String artist,
+        @RequestParam(required = false) String genre,
+        @RequestParam(required = false) String mood
+    ) {
+        if (title  != null) return songService.getSongsByTitle(title);
+        if (artist != null) return songService.getSongsByArtist(artist);
+        if (genre  != null) return songService.getSongsByGenre(genre);
+        if (mood   != null) return songService.getSongsByMood(mood);
+        return songService.getAllSongs();
+    }
+
     // ===== Add a new song =====
     @PostMapping
     public Song addSong(@RequestBody Song newSong) {

@@ -28,22 +28,22 @@ public class SongService {
 
     // ===== Get songs by artist =====
     public ArrayList<Song> getSongsByArtist(String artist) {
-        return songRepository.findByArtistIgnoreCase(artist);
+        return songRepository.findByArtistContainingIgnoreCase(artist);
     }
 
     // ===== Get songs by genre =====
     public ArrayList<Song> getSongsByGenre(String genre) {
-        return songRepository.findByGenreIgnoreCase(genre);
+        return songRepository.findByGenreContainingIgnoreCase(genre);
     }
 
     // ===== Get songs by mood =====
     public ArrayList<Song> getSongsByMood(String mood) {
-        return songRepository.findByMoodIgnoreCase(mood);
+        return songRepository.findByMoodContainingIgnoreCase(mood);
     }
 
     // ===== Get songs by title =====
     public ArrayList<Song> getSongsByTitle(String title) {
-        return songRepository.findByTitleIgnoreCase(title);
+        return songRepository.findByTitleContainingIgnoreCase(title);
     }
 
     // ===== Add a new song =====
@@ -60,7 +60,7 @@ public class SongService {
                     existing.setGenre(updatedSong.getGenre());
                     existing.setMood(updatedSong.getMood());
                     existing.setDateReleased(updatedSong.getDateReleased());
-                    existing.setImageBase64(updatedSong.getImageBase64());
+                    existing.setImageUrl(updatedSong.getImageUrl());
                     return songRepository.save(existing);
                 })
                 .orElseGet(() -> {

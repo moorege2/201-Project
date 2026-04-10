@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 @Repository
 public interface SongRepository extends MongoRepository<Song, String> {
-    ArrayList<Song> findByArtistIgnoreCase(String artist);
-    ArrayList<Song> findByTitleIgnoreCase(String title);
-    ArrayList<Song> findByGenreIgnoreCase(String genre);
-    ArrayList<Song> findByMoodIgnoreCase(String mood);
+    ArrayList<Song> findByArtistContainingIgnoreCase(String artist);
+    ArrayList<Song> findByTitleContainingIgnoreCase(String title);
+    ArrayList<Song> findByGenreContainingIgnoreCase(String genre);
+    ArrayList<Song> findByMoodContainingIgnoreCase(String mood);
 
     
 }
