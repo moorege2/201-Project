@@ -16,6 +16,7 @@ public class Song implements Comparable<Song> {
     private String dateReleased;
     private boolean isFavorite;
     private String imageBase64;
+    private String imageUrl;
 
     // ============ CONSTRUCTORS ============
 
@@ -172,5 +173,13 @@ public class Song implements Comparable<Song> {
 
     public void setIsFavorite(boolean isFavorite) {
         this.isFavorite = isFavorite;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

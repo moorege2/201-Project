@@ -138,58 +138,55 @@
     <div id="song-list">Loading songs...</div>
 
     <script>
-        const API_BASE = "https://music-player-m56j.onrender.com/api/songs";
+        const API_BASE = "http://localhost:8080/api/songs";
 
-        // ===== Load all songs on page open =====
-        window.onload = loadAllSongs;
+window.onload = loadAllSongs;
 
-        function loadAllSongs() {
-            fetch(API_BASE)
-                .then(res => res.json())
-                .then(songs => displaySongs(songs))
-                .catch(err => {
-                    document.getElementById("song-list").innerHTML = "Failed to load songs.";
-                    console.error(err);
-                });
-        }
+function loadAllSongs() {
+    fetch(API_BASE)
+        .then(res => res.json())
+        .then(songs => displaySongs(songs))
+        .catch(err => {
+            document.getElementById("song-list").innerHTML = "Failed to load songs.";
+            console.error(err);
+        });
+}
 
-        // ===== Search songs by type =====
-        function searchSongs() {
-            const type = document.getElementById("search-type").value;
-            const query = document.getElementById("search-input").value.trim();
+function searchSongs() {
+    const type = document.getElementById("search-type").value;
+    const query = document.getElementById("search-input").value.trim();
 
-            if (type === "all" || query === "") {
-                loadAllSongs();
-                return;
-            }
+    if (type === "all" || query === "") {
+        loadAllSongs();
+        return;
+    }
 
-            fetch(`${API_BASE}/${type}/${encodeURIComponent(query)}`)
-                .then(res => res.json())
-                .then(songs => displaySongs(songs))
-                .catch(err => console.error(err));
-        }
+    fetch(`${API_BASE}/${type}/${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(songs => displaySongs(songs))
+        .catch(err => console.error(err));
+}
 
-        // ===== Build song cards =====
-        function displaySongs(songs) {
-            const container = document.getElementById("song-list");
+function displaySongs(songs) {
+    const container = document.getElementById("song-list");
 
-            if (!songs || songs.length === 0) {
-                container.innerHTML = "<p>No songs found.</p>";
-                return;
-            }
+    if (!songs || songs.length === 0) {
+        container.innerHTML = "<p>No songs found.</p>";
+        return;
+    }
 
-            container.innerHTML = songs.map(song => `
-                <div class="song-card">
-                    ${song.imageBase64
-                        ? `<img src="data:image/jpeg;base64,${song.imageBase64}" alt="${song.title}">`
-                        : `<div class="no-image">No Image</div>`}
-                    <h3>${song.title}</h3>
-                    <p>${song.artist}</p>
-                    <p>${song.genre} · ${song.mood}</p>
-                    <p>${song.dateReleased}</p>
-                </div>
-            `).join("");
-        }
+    container.innerHTML = songs.map(song => `
+        <div class="song-card">
+            ${song.imageUrl
+                ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                : `<div class="no-image">No Image</div>`}
+            <h3>${song.title}</h3>
+            <p>${song.artist}</p>
+            <p>${song.genre} · ${song.mood}</p>
+            <p>${song.dateReleased}</p>
+        </div>
+    `).join("");
+}
     </script>
 
 </body>
