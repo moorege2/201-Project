@@ -85,10 +85,10 @@ public class User implements Comparable<User> {
      * 
      * @return the hash value
      */
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+    // @Override
+    // public int hashCode() {
+        // return id != null ? id.hashCode() : 0;
+    // }
 
     /**
      * This method checks the relationship between two users

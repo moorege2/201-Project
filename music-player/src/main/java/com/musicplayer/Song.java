@@ -87,15 +87,15 @@ public class Song implements Comparable<Song> {
         return this.getId().equals(s.id);
     }
 
-    /**
-     * This method converts the object to a number
-     * 
-     * @return the hash value
-     */
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
+        /**
+         * This method converts the object to a number
+         * 
+         * @return the hash value
+         */
+        // @Override
+        // public int hashCode() {
+            // return id != null ? id.hashCode() : 0;
+        // }
 
     /**
      * This method checks the relationship between two songs
