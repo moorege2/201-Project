@@ -1,5 +1,6 @@
 use('songsDB');
 
+db.getCollection('songs').deleteMany({});
 db.getCollection('songs').insertMany([
   // Pop
   {
@@ -8,7 +9,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Energetic',
     dateReleased: '1983-01-02',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/55/Michael_Jackson_-_Thriller.png'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273230da28b7b53e7a2192e1743'
   },
 
   {
@@ -17,7 +18,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Energetic',
     dateReleased: '1975-10-31',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9f/Bohemian_Rhapsody.png'
+    imageUrl: 'https://i.scdn.co/image/ab67616d00001e0231988dbd4a501b2f376f8e34'
   },
 
   {
@@ -26,7 +27,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Happy',
     dateReleased: '1976-08-27',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/a/a3/ABBA_-_The_Album.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b27370f7a1b35d5165c85b95a0e0'
   },
 
   {
@@ -35,7 +36,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Sad',
     dateReleased: '1992-11-03',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/4/47/Whitney_Houston_-_The_Bodyguard_Soundtrack.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273a500339114058474d1ee6f7e'
   },
 
   {
@@ -54,7 +55,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Happy',
     dateReleased: '2008-07-08',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/3c/Zac_Brown_Band_-_The_Foundation.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'
 
   },
 
@@ -64,7 +65,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Sad',
     dateReleased: '1973-10-15',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/50/Jolene_album.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b27359532597b51b2f64811bc9b3'
 
   },
 
@@ -74,7 +75,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Calm',
     dateReleased: '1971-04-12',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/1/17/TakeMeHomeCountryRoads.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273a19cee952b6dae128d68f116'
 
   },
 
@@ -84,7 +85,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Energetic',
     dateReleased: '2005-10-26',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Carrie_Underwood_-_Some_Hearts.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b2734bc55b98f352c91c78f2aa21'
   },
 
   {
@@ -93,7 +94,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Calm',
     dateReleased: '2004-08-17',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/52/Rascal_Flatts_-_Feels_Like_Today.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273d1ca2ddde8ff17e3991de83d'
   },
 
   // Rock
@@ -103,7 +104,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1980-07-25',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/ACDC_Back_in_Black.jpg/220px-ACDC_Back_in_Black.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d00001e020925ea2f93242511f6482f38'
   },
 
   {
@@ -112,7 +113,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1987-09-28',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/6/60/GunsnRosesAppetiteforDestructionalbumcover.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b27321ebf49b3292c3f0f575f0f5'
 
   },
 
@@ -122,7 +123,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1991-09-10',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b7/NirvanaNevermindalbumcover.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273e175a19e530c898d167d39bf'
 
   },
 
@@ -132,7 +133,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Calm',
     dateReleased: '1971-11-08',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/2/26/Led_Zeppelin_-_Led_Zeppelin_IV.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273e1773ff68e5a63841a1ade09'
 
   },
 
@@ -142,7 +143,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rock',
     mood: 'Energetic',
     dateReleased: '1981-02-09',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/9/9a/Rush_Moving_Pictures.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b27372833c1ae3343cbfb4617073'
 
   },
 
@@ -153,7 +154,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Energetic',
     dateReleased: '2024-05-04',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/30/Kendrick_Lamar_-_Not_Like_Us.png'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b2731ea0c62b2339cbf493a999ad'
   },
 
   {
@@ -162,7 +163,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Energetic',
     dateReleased: '2002-10-28',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/7/77/Eminemloseyourself.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273968da85f248a7e7747767801'
 
   },
 
@@ -172,7 +173,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Sad',
     dateReleased: '2000-11-13',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/3/35/Eminem_-_The_Marshall_Mathers_LP_CD_cover.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273660b251d25d51665990552ec'
 
   },
 
@@ -182,7 +183,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Calm',
     dateReleased: '1993-03-09',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/5/53/Wu-Tang_Clan_Enter_the_Wu-Tang.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d00001e02f7d3ba2473d4452b83ba61c4'
   },
 
   {
@@ -191,7 +192,7 @@ db.getCollection('songs').insertMany([
     genre: 'Rap',
     mood: 'Happy',
     dateReleased: '2003-01-07',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b8/50cent-getrichordietryin.jpg'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273d843fabb75fef14010e30cae'
   },
 
 
