@@ -45,7 +45,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Happy',
     dateReleased: '2017-01-06',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b27383e9b06ccd219248b5301264'
   },
 
   // Country
