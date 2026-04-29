@@ -45,7 +45,7 @@ db.getCollection('songs').insertMany([
     genre: 'Pop',
     mood: 'Happy',
     dateReleased: '2017-01-06',
-    imageUrl: 'https://upload.wikimedia.org/wikipedia/en/b/b8/Ed_Sheeran_-_Shape_of_You_%28Official_Single_Cover%29.png'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'
   },
 
   // Country
@@ -55,7 +55,7 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Happy',
     dateReleased: '2008-07-08',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273157d6d0762e17e7dc1ad5203'
 
   },
 
