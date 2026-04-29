@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Song Library</title>
@@ -23,7 +24,8 @@
             flex-wrap: wrap;
         }
 
-        .search-bar input, .search-bar select {
+        .search-bar input,
+        .search-bar select {
             padding: 8px 12px;
             border-radius: 6px;
             border: none;
@@ -58,6 +60,45 @@
             border-radius: 10px;
             padding: 15px;
             text-align: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+            background-color: #333;
+        }
+
+        .mini-play-btn {
+            position: absolute;
+            bottom: 80px;
+            /* Position it over the bottom-right of the image */
+            right: 20px;
+            background-color: #1DB954;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            /* Hidden by default */
+            transition: opacity 0.3s, transform 0.2s;
+        }
+
+        .song-card:hover .mini-play-btn {
+            opacity: 1;
+            /* Show button when hovering over the card */
+        }
+
+        .mini-play-btn:hover {
+            transform: scale(1.1);
+            background-color: #1ed760;
         }
 
         .song-card img {
@@ -95,28 +136,28 @@
         }
     </style>
 </head>
+
 <body>
 
     <div style="background:#2a5298;padding:15px;display:flex;
             justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h2 style="margin:0;">🎵 Song Library</h2>
-    <div>
-        <button onclick="window.location.href='home.html'" 
+        <h2 style="margin:0;">🎵 Song Library</h2>
+        <div>
+            <button onclick="window.location.href='home.html'"
                 style="background:white;color:#2a5298;margin-right:8px;">Home</button>
-        <button onclick="window.location.href='profile.html'" 
+            <button onclick="window.location.href='profile.html'"
                 style="background:white;color:#2a5298;margin-right:8px;">Profile</button>
-        <button onclick="logout()" 
-                style="background:#e74c3c;color:white;">Logout</button>
+            <button onclick="logout()" style="background:#e74c3c;color:white;">Logout</button>
+        </div>
     </div>
-</div>
 
-<!-- Add this to the script -->
-<script>
-    function logout() {
-        localStorage.removeItem("currentUser");
-        window.location.href = "index.html";
-    }
-</script>
+    <!-- Add this to the script -->
+    <script>
+        function logout() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";
+        }
+    </script>
 
     <h1>🎵 Song Library</h1>
 
@@ -140,69 +181,89 @@
     <script>
         const API_BASE = "http://localhost:8080/api/songs";
 
-window.onload = loadAllSongs;
+        window.onload = loadAllSongs;
 
-function loadAllSongs() {
-    fetch(API_BASE)
-        .then(res => res.json())
-        .then(songs => displaySongs(songs))
-        .catch(err => {
-            document.getElementById("song-list").innerHTML = "Failed to load songs.";
-            console.error(err);
-        });
-}
+        function loadAllSongs() {
+            fetch(API_BASE)
+                .then(res => res.json())
+                .then(songs => displaySongs(songs))
+                .catch(err => {
+                    document.getElementById("song-list").innerHTML = "Failed to load songs.";
+                    console.error(err);
+                });
+        }
 
-function searchSongs() {
-    const type = document.getElementById("search-type").value;
-    const query = document.getElementById("search-input").value.trim().toLowerCase();
+        function searchSongs() {
+            const type = document.getElementById("search-type").value;
+            const query = document.getElementById("search-input").value.trim().toLowerCase();
 
-    if (query === "") {
-        loadAllSongs();
-        return;
-    }
+            if (query === "") {
+                loadAllSongs();
+                return;
+            }
 
-    fetch(API_BASE)
-        .then(res => res.json())
-        .then(songs => {
-            const filtered = songs.filter(song => {
-                if (type === "all") return (
-                    song.title.toLowerCase().includes(query) ||
-                    song.artist.toLowerCase().includes(query) ||
-                    song.genre.toLowerCase().includes(query) ||
-                    song.mood.toLowerCase().includes(query)
-                );
-                if (type === "title")  return song.title.toLowerCase().includes(query);
-                if (type === "artist") return song.artist.toLowerCase().includes(query);
-                if (type === "genre")  return song.genre.toLowerCase().includes(query);
-                if (type === "mood")   return song.mood.toLowerCase().includes(query);
-                return true;
-            });
-            displaySongs(filtered);
-        })
-        .catch(err => console.error("Search failed:", err));
-}
+            fetch(API_BASE)
+                .then(res => res.json())
+                .then(songs => {
+                    const filtered = songs.filter(song => {
+                        if (type === "all") return (
+                            song.title.toLowerCase().includes(query) ||
+                            song.artist.toLowerCase().includes(query) ||
+                            song.genre.toLowerCase().includes(query) ||
+                            song.mood.toLowerCase().includes(query)
+                        );
+                        if (type === "title") return song.title.toLowerCase().includes(query);
+                        if (type === "artist") return song.artist.toLowerCase().includes(query);
+                        if (type === "genre") return song.genre.toLowerCase().includes(query);
+                        if (type === "mood") return song.mood.toLowerCase().includes(query);
+                        return true;
+                    });
+                    displaySongs(filtered);
+                })
+                .catch(err => console.error("Search failed:", err));
+        }
 
-function displaySongs(songs) {
-    const container = document.getElementById("song-list");
+        function displaySongs(songs) {
+            const container = document.getElementById("song-list");
 
-    if (!songs || songs.length === 0) {
-        container.innerHTML = "<p>No songs found.</p>";
-        return;
-    }
+            if (!songs || songs.length === 0) {
+                container.innerHTML = "<p>No songs found.</p>";
+                return;
+            }
 
-    container.innerHTML = songs.map(song => `
+            container.innerHTML = songs.map(song => `
         <div class="song-card">
             ${song.imageUrl
-                ? `<img src="${song.imageUrl}" alt="${song.title}">`
-                : `<div class="no-image">No Image</div>`}
+                    ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                    : `<div class="no-image">No Image</div>`}
+                <button class="mini-play-btn" onclick="playMusic('${song.title}')">▶</button>
+
             <h3>${song.title}</h3>
             <p>${song.artist}</p>
             <p>${song.genre} · ${song.mood}</p>
             <p>${song.dateReleased}</p>
         </div>
     `).join("");
-}
+        }
+
+        const player = new Audio();
+
+        function playMusic(songTitle) {
+    
+            const filePath = `audio/${songTitle}.mp3`;
+
+            console.log("Attempting to play:", filePath);
+
+            player.src = filePath;
+
+            player.play().catch(err => {
+                console.error("Playback error:", err);
+                alert("Audio file not found! Please ensure your file in 'static/audio/' is named exactly: " + songTitle + ".mp3");
+            });
+        }
+
     </script>
 
 </body>
+
 </html>
