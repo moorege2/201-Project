@@ -16,6 +16,7 @@ public class Song implements Comparable<Song> {
     private String dateReleased;
     private boolean isFavorite;
     private String imageUrl;
+    private String audioUrl;
 
     // ============ CONSTRUCTORS ============
 
@@ -173,5 +174,13 @@ public class Song implements Comparable<Song> {
     
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
     }
 }

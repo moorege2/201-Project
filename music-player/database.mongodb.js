@@ -94,7 +94,8 @@ db.getCollection('songs').insertMany([
     genre: 'Country',
     mood: 'Calm',
     dateReleased: '2004-08-17',
-    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273d1ca2ddde8ff17e3991de83d'
+    imageUrl: 'https://i.scdn.co/image/ab67616d0000b273d1ca2ddde8ff17e3991de83d',
+    audioUrl: '/audio/bless_the_broken_road.mp3'
   },
 
   // Rock
