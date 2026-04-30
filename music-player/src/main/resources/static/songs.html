@@ -15,7 +15,6 @@
             color: #1DB954;
         }
 
-        /* ===== Search Bar ===== */
         .search-bar {
             margin-bottom: 20px;
             display: flex;
@@ -46,7 +45,6 @@
             background-color: #17a347;
         }
 
-        /* ===== Song Cards ===== */
         #song-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -55,27 +53,31 @@
 
         .song-card {
             background-color: #282828;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
         }
 
         .song-card img {
             width: 100%;
-            height: 150px;
+            height: 200px;
             object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background-color: #444;
+            display: block;
         }
 
-        .song-card h3 {
-            margin: 5px 0;
+        .song-info {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .song-info h3 {
+            margin: 0 0 4px 0;
             font-size: 15px;
             color: #fff;
         }
 
-        .song-card p {
+        .song-info p {
             margin: 3px 0;
             font-size: 13px;
             color: #aaa;
@@ -83,15 +85,37 @@
 
         .no-image {
             width: 100%;
-            height: 150px;
+            height: 200px;
             background-color: #444;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #888;
             font-size: 13px;
-            margin-bottom: 10px;
+        }
+
+        .fav-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(50, 50, 50, 0.75);
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s ease;
+            padding: 0;
+            z-index: 10;
+        }
+
+        .fav-btn:hover {
+            transform: scale(1.2);
+            opacity: 1;
         }
     </style>
 </head>
@@ -99,28 +123,26 @@
 
     <div style="background:#2a5298;padding:15px;display:flex;
             justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <h2 style="margin:0;">🎵 Song Library</h2>
-    <div>
-        <button onclick="window.location.href='home.html'" 
-                style="background:white;color:#2a5298;margin-right:8px;">Home</button>
-        <button onclick="window.location.href='profile.html'" 
-                style="background:white;color:#2a5298;margin-right:8px;">Profile</button>
-        <button onclick="logout()" 
-                style="background:#e74c3c;color:white;">Logout</button>
+        <h2 style="margin:0;">🎵 Song Library</h2>
+        <div>
+            <button onclick="window.location.href='home.html'"
+                    style="background:white;color:#2a5298;margin-right:8px;">Home</button>
+            <button onclick="window.location.href='profile.html'"
+                    style="background:white;color:#2a5298;margin-right:8px;">Profile</button>
+            <button onclick="logout()"
+                    style="background:#e74c3c;color:white;">Logout</button>
+        </div>
     </div>
-</div>
 
-<!-- Add this to the script -->
-<script>
-    function logout() {
-        localStorage.removeItem("currentUser");
-        window.location.href = "index.html";
-    }
-</script>
+    <script>
+        function logout() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";
+        }
+    </script>
 
     <h1>🎵 Song Library</h1>
 
-    <!-- Search Controls -->
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Search...">
         <select id="search-type">
@@ -134,74 +156,101 @@
         <button onclick="loadAllSongs()">Reset</button>
     </div>
 
-    <!-- Song Grid -->
     <div id="song-list">Loading songs...</div>
 
     <script>
         const API_BASE = "http://localhost:8080/api/songs";
 
-window.onload = loadAllSongs;
+        window.onload = loadAllSongs;
 
-function loadAllSongs() {
-    fetch(API_BASE)
-        .then(res => res.json())
-        .then(songs => displaySongs(songs))
-        .catch(err => {
-            document.getElementById("song-list").innerHTML = "Failed to load songs.";
-            console.error(err);
-        });
-}
+        function buildCard(song) {
+            return `
+                <div class="song-card">
+                    <button class="fav-btn ${song.isFavorite ? 'active' : 'inactive'}"
+                        onclick="toggleFavorite('${song.id}', this)">
+                        ${song.isFavorite ? '❤️' : '🤍'}
+                    </button>
+                    ${song.imageUrl
+                        ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                        : `<div class="no-image">No Image</div>`}
+                    <div class="song-info">
+                        <h3>${song.title}</h3>
+                        <p>${song.artist}</p>
+                        <p>${song.genre} · ${song.mood}</p>
+                        <p>${song.dateReleased}</p>
+                    </div>
+                </div>
+            `;
+        }
 
-function searchSongs() {
-    const type = document.getElementById("search-type").value;
-    const query = document.getElementById("search-input").value.trim().toLowerCase();
+        function loadAllSongs() {
+            fetch(API_BASE)
+                .then(res => res.json())
+                .then(songs => displaySongs(songs))
+                .catch(err => {
+                    document.getElementById("song-list").innerHTML = "Failed to load songs.";
+                    console.error(err);
+                });
+        }
 
-    if (query === "") {
-        loadAllSongs();
-        return;
-    }
+        function searchSongs() {
+            const type = document.getElementById("search-type").value;
+            const query = document.getElementById("search-input").value.trim().toLowerCase();
 
-    fetch(API_BASE)
-        .then(res => res.json())
-        .then(songs => {
-            const filtered = songs.filter(song => {
-                if (type === "all") return (
-                    song.title.toLowerCase().includes(query) ||
-                    song.artist.toLowerCase().includes(query) ||
-                    song.genre.toLowerCase().includes(query) ||
-                    song.mood.toLowerCase().includes(query)
+            if (query === "") {
+                loadAllSongs();
+                return;
+            }
+
+            fetch(API_BASE)
+                .then(res => res.json())
+                .then(songs => {
+                    const filtered = songs.filter(song => {
+                        if (type === "all") return (
+                            song.title.toLowerCase().includes(query) ||
+                            song.artist.toLowerCase().includes(query) ||
+                            song.genre.toLowerCase().includes(query) ||
+                            song.mood.toLowerCase().includes(query)
+                        );
+                        if (type === "title")  return song.title.toLowerCase().includes(query);
+                        if (type === "artist") return song.artist.toLowerCase().includes(query);
+                        if (type === "genre")  return song.genre.toLowerCase().includes(query);
+                        if (type === "mood")   return song.mood.toLowerCase().includes(query);
+                        return true;
+                    });
+                    displaySongs(filtered);
+                })
+                .catch(err => console.error("Search failed:", err));
+        }
+
+        function displaySongs(songs) {
+            const container = document.getElementById("song-list");
+            if (!songs || songs.length === 0) {
+                container.innerHTML = "<p>No songs found.</p>";
+                return;
+            }
+            container.innerHTML = songs.map(buildCard).join("");
+        }
+
+        async function toggleFavorite(songId, btn) {
+            const isCurrentlyFav = btn.classList.contains("active");
+            const newFavState = !isCurrentlyFav;
+
+            btn.classList.toggle("active", newFavState);
+            btn.classList.toggle("inactive", !newFavState);
+            btn.textContent = newFavState ? "❤️" : "🤍";
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/songs/${songId}/favorite?isFavorite=${newFavState}`,
+                    { method: "PATCH" }
                 );
-                if (type === "title")  return song.title.toLowerCase().includes(query);
-                if (type === "artist") return song.artist.toLowerCase().includes(query);
-                if (type === "genre")  return song.genre.toLowerCase().includes(query);
-                if (type === "mood")   return song.mood.toLowerCase().includes(query);
-                return true;
-            });
-            displaySongs(filtered);
-        })
-        .catch(err => console.error("Search failed:", err));
-}
-
-function displaySongs(songs) {
-    const container = document.getElementById("song-list");
-
-    if (!songs || songs.length === 0) {
-        container.innerHTML = "<p>No songs found.</p>";
-        return;
-    }
-
-    container.innerHTML = songs.map(song => `
-        <div class="song-card">
-            ${song.imageUrl
-                ? `<img src="${song.imageUrl}" alt="${song.title}">`
-                : `<div class="no-image">No Image</div>`}
-            <h3>${song.title}</h3>
-            <p>${song.artist}</p>
-            <p>${song.genre} · ${song.mood}</p>
-            <p>${song.dateReleased}</p>
-        </div>
-    `).join("");
-}
+                if (!response.ok) throw new Error("Failed");
+            } catch (err) {
+                btn.classList.toggle("active", isCurrentlyFav);
+                btn.textContent = isCurrentlyFav ? "❤️" : "🤍";
+                alert("Could not update favorite. Please try again.");
+            }
+        }
     </script>
 
 </body>
