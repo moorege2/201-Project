@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Song Library</title>
@@ -22,7 +23,8 @@
             flex-wrap: wrap;
         }
 
-        .search-bar input, .search-bar select {
+        .search-bar input,
+        .search-bar select {
             padding: 8px 12px;
             border-radius: 6px;
             border: none;
@@ -57,6 +59,42 @@
             overflow: hidden;
             position: relative;
             cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+            background-color: #333;
+        }
+
+        .mini-play-btn {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background-color: #1DB954;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.2s;
+            z-index: 5;
+        }
+
+        .song-card:hover .mini-play-btn {
+            opacity: 1;
+        }
+
+        .mini-play-btn:hover {
+            transform: scale(1.1);
+            background-color: #1ed760;
         }
 
         .song-card img {
@@ -119,6 +157,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div style="background:#2a5298;padding:15px;display:flex;
@@ -126,11 +165,10 @@
         <h2 style="margin:0;">🎵 Song Library</h2>
         <div>
             <button onclick="window.location.href='home.html'"
-                    style="background:white;color:#2a5298;margin-right:8px;">Home</button>
+                style="background:white;color:#2a5298;margin-right:8px;">Home</button>
             <button onclick="window.location.href='profile.html'"
-                    style="background:white;color:#2a5298;margin-right:8px;">Profile</button>
-            <button onclick="logout()"
-                    style="background:#e74c3c;color:white;">Logout</button>
+                style="background:white;color:#2a5298;margin-right:8px;">Profile</button>
+            <button onclick="logout()" style="background:#e74c3c;color:white;">Logout</button>
         </div>
     </div>
 
@@ -170,6 +208,7 @@
                         onclick="toggleFavorite('${song.id}', this)">
                         ${song.isFavorite ? '❤️' : '🤍'}
                     </button>
+                    <button class="mini-play-btn" onclick="playMusic('${song.title}')">▶</button>
                     ${song.imageUrl
                         ? `<img src="${song.imageUrl}" alt="${song.title}">`
                         : `<div class="no-image">No Image</div>`}
@@ -212,10 +251,10 @@
                             song.genre.toLowerCase().includes(query) ||
                             song.mood.toLowerCase().includes(query)
                         );
-                        if (type === "title")  return song.title.toLowerCase().includes(query);
+                        if (type === "title") return song.title.toLowerCase().includes(query);
                         if (type === "artist") return song.artist.toLowerCase().includes(query);
-                        if (type === "genre")  return song.genre.toLowerCase().includes(query);
-                        if (type === "mood")   return song.mood.toLowerCase().includes(query);
+                        if (type === "genre") return song.genre.toLowerCase().includes(query);
+                        if (type === "mood") return song.mood.toLowerCase().includes(query);
                         return true;
                     });
                     displaySongs(filtered);
@@ -225,10 +264,12 @@
 
         function displaySongs(songs) {
             const container = document.getElementById("song-list");
+
             if (!songs || songs.length === 0) {
                 container.innerHTML = "<p>No songs found.</p>";
                 return;
             }
+
             container.innerHTML = songs.map(buildCard).join("");
         }
 
@@ -251,7 +292,21 @@
                 alert("Could not update favorite. Please try again.");
             }
         }
+
+        const player = new Audio();
+
+        function playMusic(songTitle) {
+            const filePath = `audio/${songTitle}.mp3`;
+            console.log("Attempting to play:", filePath);
+            player.src = filePath;
+            player.play().catch(err => {
+                console.error("Playback error:", err);
+                alert("Audio file not found! Please ensure your file in 'static/audio/' is named exactly: " + songTitle + ".mp3");
+            });
+        }
+
     </script>
 
 </body>
+
 </html>

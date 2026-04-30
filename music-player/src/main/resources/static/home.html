@@ -43,6 +43,41 @@
             border-radius: 12px;
             overflow: hidden;
             position: relative;
+            transition: background 0.3s;
+        }
+
+        .song:hover {
+            background: #282828;
+        }
+
+        .home-play-btn {
+            position: absolute;
+            bottom: 55px;
+            right: 25px;
+            background-color: #1DB954;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.2s;
+            z-index: 5;
+        }
+
+        .song:hover .home-play-btn {
+            opacity: 1;
+        }
+
+        .home-play-btn:hover {
+            transform: scale(1.1);
+            background-color: #1ed760;
             cursor: pointer;
         }
 
@@ -125,7 +160,6 @@
         <input type="text" id="search" placeholder="Search your library..." onkeyup="searchLibrary()"
             style="padding:8px; width:60%;">
     </div>
-
     <h3 style="padding-left:20px;">Saved Songs</h3>
     <div id="library">Loading...</div>
 
@@ -142,16 +176,20 @@
         function buildCard(song) {
             return `
                 <div class="song">
-                    <button class="fav-btn active" onclick="toggleFavorite('${song.id}', this)">❤️</button>
+                    <button class="fav-btn ${song.isFavorite ? 'active' : 'inactive'}"
+                        onclick="toggleFavorite('${song.id}', this)">
+                        ${song.isFavorite ? '❤️' : '🤍'}
+                    </button>
+                    <button class="home-play-btn" onclick="playMusic('${song.artist}', '${song.title}')">▶</button>
                     ${song.imageUrl
-                    ? `<img src="${song.imageUrl}" alt="${song.title}">`
-                    : `<div class="no-image">No Image</div>`}
-                <div class="song-info">
-                <strong>${song.title}</strong>
-                <span>${song.artist}</span>
-                <span>${song.genre} · ${song.mood}</span>
-                <span>${song.dateReleased}</span>
-            </div>
+                        ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                        : `<div class="no-image">No Image</div>`}
+                    <div class="song-info">
+                        <strong>${song.title}</strong>
+                        <span>${song.artist}</span>
+                        <span>${song.genre} · ${song.mood}</span>
+                        <span>${song.dateReleased}</span>
+                    </div>
                 </div>
             `;
         }
@@ -234,6 +272,21 @@
                 btn.textContent = isCurrentlyFav ? "❤️" : "🤍";
                 alert("Could not update favorite. Please try again.");
             }
+        }
+
+        const player = new Audio();
+
+        function playMusic(artist, title) {
+            const fileName = `${title}.mp3`;
+            const filePath = `audio/${fileName}`;
+
+            console.log("Playing:", filePath);
+
+            player.src = filePath;
+            player.play().catch(err => {
+                console.error("Playback error:", err);
+                alert("Audio file not found! Make sure it is named: " + fileName);
+            });
         }
 
     </script>
