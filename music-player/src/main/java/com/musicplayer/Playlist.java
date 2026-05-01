@@ -72,10 +72,10 @@ public class Playlist implements Comparable<Playlist> {
      * 
      * @return the hash value
      */
-    // @Override
-    // public int hashCode() {
-        // return id != null ? id.hashCode() : 0;
-    // }
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 
     /**
      * This method checks the relationship between two playlists
