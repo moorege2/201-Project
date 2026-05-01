@@ -17,7 +17,11 @@ public class User implements Comparable<User> {
     private String password;
     private ArrayList<String> favoritedSongIds;
     private ArrayList<String> playlistIds;
-    private ArrayList<String> friends;
+    private ArrayList<String> friends = new ArrayList<>();
+    private ArrayList<String> followers = new ArrayList<>();
+private ArrayList<String> following = new ArrayList<>();
+private ArrayList<String> pendingRequests = new ArrayList<>();
+private boolean isPrivate = false;
 
 
     // ============ CONSTRUCTORS ============
@@ -174,5 +178,17 @@ public class User implements Comparable<User> {
 public void setFriends(ArrayList<String> friends) {
     this.friends = friends;
 }
+
+public ArrayList<String> getFollowers() { return followers; }
+public void setFollowers(ArrayList<String> followers) { this.followers = followers; }
+
+public ArrayList<String> getFollowing() { return following; }
+public void setFollowing(ArrayList<String> following) { this.following = following; }
+
+public ArrayList<String> getPendingRequests() { return pendingRequests; }
+public void setPendingRequests(ArrayList<String> pendingRequests) { this.pendingRequests = pendingRequests; }
+
+public boolean isPrivate() { return isPrivate; }
+public void setPrivate(boolean isPrivate) { this.isPrivate = isPrivate; }
 
 }

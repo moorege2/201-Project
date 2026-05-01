@@ -294,15 +294,22 @@
             window.location.href = "index.html";
         }
 
-        function loadAllSongs() {
-            fetch(API_BASE)
-                .then(res => res.json())
-                .then(songs => displaySongs(songs))
-                .catch(err => {
-                    document.getElementById("song-list").innerHTML = "Failed to load songs.";
-                    console.error(err);
-                });
-        }
+let userFavoritedIds = [];
+
+function loadAllSongs() {
+    fetch(`http://localhost:8080/api/users/${currentUser}`)
+        .then(res => res.json())
+        .then(user => {
+            userFavoritedIds = user.favoritedSongIds || [];
+            return fetch(API_BASE);
+        })
+        .then(res => res.json())
+        .then(songs => displaySongs(songs))
+        .catch(err => {
+            document.getElementById("song-list").innerHTML = "Failed to load songs.";
+            console.error(err);
+        });
+}
 
         function displaySongs(songs) {
             const container = document.getElementById("song-list");
@@ -314,26 +321,27 @@
         }
 
         function buildCard(song) {
-            return `
-                <div class="song-card">
-                    <button class="fav-btn ${song.isFavorite ? 'active' : 'inactive'}"
-                        onclick="toggleFavorite('${song.id}', this)">
-                        ${song.isFavorite ? '❤️' : '🤍'}
-                    </button>
-                    <button class="add-playlist-btn" title="Add to playlist"
-                        onclick="openPanelForSong('${song.id}')">➕</button>
-                    <button class="mini-play-btn" onclick="playMusic('${song.title}')">▶</button>
-                    ${song.imageUrl
-                        ? `<img src="${song.imageUrl}" alt="${song.title}">`
-                        : `<div class="no-image" style="height:200px;background:#444;display:flex;align-items:center;justify-content:center;">No Image</div>`}
-                    <div class="song-info">
-                        <h3>${song.title}</h3>
-                        <p>${song.artist}</p>
-                        <p>${song.genre} · ${song.mood}</p>
-                    </div>
-                </div>
-            `;
-        }
+    const isFav = userFavoritedIds.includes(song.id);
+    return `
+        <div class="song-card">
+            <button class="fav-btn ${isFav ? 'active' : 'inactive'}"
+                onclick="toggleFavorite('${song.id}', this)">
+                ${isFav ? '❤️' : '🤍'}
+            </button>
+            <button class="add-playlist-btn" title="Add to playlist"
+                onclick="openPanelForSong('${song.id}')">➕</button>
+            <button class="mini-play-btn" onclick="playMusic('${song.title}')">▶</button>
+            ${song.imageUrl
+                ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                : `<div class="no-image" style="height:200px;background:#444;display:flex;align-items:center;justify-content:center;">No Image</div>`}
+            <div class="song-info">
+                <h3>${song.title}</h3>
+                <p>${song.artist}</p>
+                <p>${song.genre} · ${song.mood}</p>
+            </div>
+        </div>
+    `;
+}
 
         function playMusic(songTitle) {
             const filePath = `audio/${songTitle}.mp3`;
@@ -355,20 +363,20 @@
             });
         }
 
-        async function toggleFavorite(songId, btn) {
-            const isCurrentlyFav = btn.textContent.trim() === "❤️";
-            const newFavState = !isCurrentlyFav;
+async function toggleFavorite(songId, btn) {
+    const isCurrentlyFav = btn.textContent.trim() === "❤️";
+    const newFavState = !isCurrentlyFav;
 
-            btn.textContent = newFavState ? "❤️" : "🤍";
+    btn.textContent = newFavState ? "❤️" : "🤍";
 
-            try {
-                const response = await fetch(`${API_BASE}/${songId}/favorite?isFavorite=${newFavState}`, { method: "PATCH" });
-                if (!response.ok) throw new Error("Failed");
-            } catch (err) {
-                btn.textContent = isCurrentlyFav ? "❤️" : "🤍";
-                alert("Could not update favorite.");
-            }
-        }
+    try {
+        const userResponse = await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=${newFavState}`, { method: "PATCH" });
+        if (!userResponse.ok) throw new Error("Failed to update user favorites");
+    } catch (err) {
+        btn.textContent = isCurrentlyFav ? "❤️" : "🤍";
+        alert("Could not update favorite.");
+    }
+}
 
         function searchSongs() {
             const type = document.getElementById("search-type").value;

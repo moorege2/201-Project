@@ -91,4 +91,10 @@ public class SongController {
     public ResponseEntity<Song> updateFavorite(@PathVariable String id, @RequestParam boolean isFavorite) {
     return ResponseEntity.ok(songService.updateFavorite(id, isFavorite));
     }
+
+    // ===== Get favorited songs for a user =====
+@GetMapping("/favorites/{username}")
+public List<Song> getFavoritedSongs(@PathVariable String username) {
+    return songService.getFavoritedSongs(username);
+}
 }

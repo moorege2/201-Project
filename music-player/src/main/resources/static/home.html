@@ -130,7 +130,7 @@
         <h2>🎵 My Library</h2>
         <div>
             <button onclick="window.location.href='songs.html'">Browse Songs</button>
-            <button onclick="goToProfile()">Profile</button>
+            <button onclick="window.location.href='profile.html'">Profile</button>
             <button onclick="logout()">Logout</button>
         </div>
     </div>
@@ -170,23 +170,34 @@
             `;
         }
 
-        function loadLibrary() {
-            fetch("http://localhost:8080/api/songs")
-                .then(res => res.json())
-                .then(data => {
-                    let libraryDiv = document.getElementById("library");
-                    let favorites = data.filter(song => song.isFavorite);
-
-                    if (favorites.length === 0) {
-                        libraryDiv.innerHTML = "<p>No saved songs yet.</p>";
-                        return;
-                    }
-                    libraryDiv.innerHTML = favorites.map(buildCard).join("");
-                })
-                .catch(err => {
-                    document.getElementById("library").innerHTML = "Failed to load songs.";
-                });
-        }
+function loadLibrary() {
+    fetch(`http://localhost:8080/api/songs/favorites/${currentUser}`)
+        .then(res => res.json())
+        .then(favorites => {
+            let libraryDiv = document.getElementById("library");
+            if (favorites.length === 0) {
+                libraryDiv.innerHTML = "<p>No saved songs yet.</p>";
+                return;
+            }
+            libraryDiv.innerHTML = favorites.map(song => `
+                <div class="song">
+                    <button class="fav-btn" onclick="toggleFavorite('${song.id}', this)">❤️</button>
+                    <button class="home-play-btn" onclick="playMusic('${song.title}')">▶</button>
+                    ${song.imageUrl
+                        ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                        : `<div style="height:200px; background:#333; display:flex; align-items:center; justify-content:center; color:#888;">No Image</div>`}
+                    <div class="song-info">
+                        <strong>${song.title}</strong>
+                        <span>${song.artist}</span>
+                        <span>${song.genre} · ${song.mood}</span>
+                    </div>
+                </div>
+            `).join("");
+        })
+        .catch(err => {
+            document.getElementById("library").innerHTML = "Failed to load songs.";
+        });
+}
 
         function playMusic(songTitle) {
             const fileName = `${songTitle}.mp3`;
@@ -212,38 +223,40 @@
             });
         }
 
-        async function toggleFavorite(songId, btn) {
-            const isCurrentlyFav = btn.textContent.trim() === "❤️";
-            const newFavState = !isCurrentlyFav;
+async function toggleFavorite(songId, btn) {
+    try {
+        await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=false`, { method: "PATCH" });
+        loadLibrary();
+    } catch (err) {
+        alert("Could not update favorite.");
+    }
+}
 
-            try {
-                const response = await fetch(`http://localhost:8080/api/songs/${songId}/favorite?isFavorite=${newFavState}`, { method: "PATCH" });
-                if (response.ok) {
-                    loadLibrary(); // Refresh library to show/remove favorites
-                }
-            } catch (err) {
-                alert("Could not update favorite.");
-            }
-        }
-
-        function searchLibrary() {
-            let query = document.getElementById("search").value.toLowerCase().trim();
-            fetch("http://localhost:8080/api/songs")
-                .then(res => res.json())
-                .then(data => {
-                    let filtered = data.filter(song => song.isFavorite && (
-                        song.title.toLowerCase().includes(query) ||
-                        song.artist.toLowerCase().includes(query)
-                    ));
-                    document.getElementById("library").innerHTML = filtered.map(buildCard).join("");
-                });
-        }
-
-        function goToProfile() { window.location.href = "profile.html"; }
-        function logout() {
-            localStorage.removeItem("currentUser");
-            window.location.href = "index.html";
-        }
+function searchLibrary() {
+    let query = document.getElementById("search").value.toLowerCase().trim();
+    fetch(`http://localhost:8080/api/songs/favorites/${currentUser}`)
+        .then(res => res.json())
+        .then(favorites => {
+            let filtered = favorites.filter(song =>
+                song.title.toLowerCase().includes(query) ||
+                song.artist.toLowerCase().includes(query)
+            );
+            document.getElementById("library").innerHTML = filtered.map(song => `
+                <div class="song">
+                    <button class="fav-btn" onclick="toggleFavorite('${song.id}', this)">❤️</button>
+                    <button class="home-play-btn" onclick="playMusic('${song.title}')">▶</button>
+                    ${song.imageUrl
+                        ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                        : `<div style="height:200px;background:#333;display:flex;align-items:center;justify-content:center;color:#888;">No Image</div>`}
+                    <div class="song-info">
+                        <strong>${song.title}</strong>
+                        <span>${song.artist}</span>
+                        <span>${song.genre} · ${song.mood}</span>
+                    </div>
+                </div>
+            `).join("");
+        });
+}
     </script>
 </body>
 
