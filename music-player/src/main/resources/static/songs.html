@@ -271,9 +271,9 @@
         <h2>🎶 My Playlists</h2>
         <div style="margin-bottom:16px;">
             <input type="text" id="new-playlist-name" placeholder="New playlist name...">
-            <label style="font-size:13px;color:#aaa;">
-                <input type="checkbox" id="new-playlist-private"> Private
-            </label><br><br>
+            <label style="font-size:13px;color:#aaa;display:flex;align-items:center;gap:6px;">
+                <input type="checkbox" id="new-playlist-private"> Make Private
+            </label>
             <button onclick="createPlaylist()" style="background:#1DB954;color:black;">+ Create Playlist</button>
         </div>
         <div id="playlist-list">Loading playlists...</div>
