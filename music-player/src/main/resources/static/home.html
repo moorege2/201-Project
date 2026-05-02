@@ -3,220 +3,643 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>My Library</title>
     <style>
-        body {
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
-            font-family: Arial;
-            background-color: #121212;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0e0e10;
             color: white;
+            min-height: 100vh;
         }
 
-        .navbar {
-            background: #2a5298;
-            padding: 15px;
+        /* ─── TOP BAR (aurora + nav combined) ─── */
+        .top-bar {
+            position: relative;
+            height: 120px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            overflow: hidden;
+            background: #12082a;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
         }
 
-        button {
-            padding: 6px 12px;
+        .aurora {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .aurora__item {
+            position: absolute;
+            border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%;
+            filter: blur(22px);
+            opacity: 0.7;
+            animation: aurora-border 6s ease-in-out infinite;
+        }
+
+        .aurora__item:nth-child(1) {
+            background: #8A84E2;
+            width: 400px; height: 260px;
+            top: -100px; left: -80px;
+            animation: aurora-1 12s ease-in-out infinite alternate, aurora-border 6s ease-in-out infinite;
+        }
+        .aurora__item:nth-child(2) {
+            background: #372554;
+            width: 360px; height: 220px;
+            top: 20px; left: 200px;
+            animation: aurora-2 14s ease-in-out infinite alternate, aurora-border 6s ease-in-out infinite;
+        }
+        .aurora__item:nth-child(3) {
+            background: #A78BFA;
+            width: 340px; height: 200px;
+            top: -80px; right: 300px;
+            animation: aurora-3 10s ease-in-out infinite alternate, aurora-border 6s ease-in-out infinite;
+        }
+        .aurora__item:nth-child(4) {
+            background: #C4B5FD;
+            width: 380px; height: 230px;
+            top: -90px; right: -80px;
+            animation: aurora-4 16s ease-in-out infinite alternate, aurora-border 6s ease-in-out infinite;
+        }
+
+        @keyframes aurora-1 {
+            0%   { transform: translate(0,0); }
+            50%  { transform: translate(30px, 20px); }
+            100% { transform: translate(0,0); }
+        }
+        @keyframes aurora-2 {
+            0%   { transform: translate(0,0); }
+            60%  { transform: translate(-20px, 15px); }
+            100% { transform: translate(0,0); }
+        }
+        @keyframes aurora-3 {
+            0%   { transform: translate(0,0); }
+            40%  { transform: translate(20px, -10px); }
+            100% { transform: translate(0,0); }
+        }
+        @keyframes aurora-4 {
+            0%   { transform: translate(0,0); }
+            50%  { transform: translate(-25px, 10px); }
+            100% { transform: translate(0,0); }
+        }
+        @keyframes aurora-border {
+            0%   { border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%; }
+            25%  { border-radius: 47% 29% 39% 49% / 61% 19% 66% 26%; }
+            50%  { border-radius: 57% 23% 47% 72% / 63% 17% 66% 33%; }
+            75%  { border-radius: 28% 49% 29% 100% / 93% 20% 64% 25%; }
+            100% { border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%; }
+        }
+
+        /* ─── BRAND LEFT ─── */
+        .brand {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .brand-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .welcome-text {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.55);
+            padding-left: 2px;
+        }
+
+        .welcome-text span {
+            color: #C4B5FD;
+            font-weight: 600;
+        }
+
+        /* ─── NAV BUTTONS RIGHT ─── */
+        .nav-actions {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-family: 'Outfit', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            border: none;
-            border-radius: 6px;
+            transition: background 0.2s, border-color 0.2s;
+            white-space: nowrap;
         }
 
-        button:hover {
-            opacity: 0.8;
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.13);
+            border-color: rgba(255,255,255,0.22);
+            color: #fff;
         }
 
+        .nav-btn.browse {
+            background: rgba(138,132,226,0.45);
+            border-color: rgba(196,181,253,0.7);
+            color: #fff;
+        }
+ 
+        .nav-btn.browse:hover {
+            background: rgba(138,132,226,0.65);
+        }
+
+        .nav-btn.logout {
+            background: rgba(255,80,80,0.2);
+            border-color: rgba(255,140,140,0.45);
+            color: #ffbbbb;
+        }
+
+        .nav-btn.logout:hover {
+            background: rgba(255,80,80,0.35);
+            border-color: rgba(255,140,140,0.7);
+            color: #fff;
+        }
+
+        /* ─── CONTENT AREA ─── */
+        .content {
+            padding: 28px;
+        }
+
+        /* ─── SEARCH BAR ─── */
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 32px;
+        }
+
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 480px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        #search {
+            width: 100%;
+            padding: 12px 16px 12px 46px;
+            background: rgba(255,255,255,0.92);
+            border: 1.5px solid rgba(255,255,255,0.6);
+            border-radius: 12px;
+            color: #111;
+            font-family: 'Outfit', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        #search:focus {
+            border-color: #8A84E2;
+            box-shadow: 0 0 0 3px rgba(138,132,226,0.25);
+            background: #fff;
+        }
+
+        #search::placeholder {
+            color: #999;
+            font-weight: 400;
+        }
+
+        /* ─── SECTION HEADER ─── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .fav-count {
+            font-size: 12px;
+            font-weight: 500;
+            color: #888;
+            background: #1a1a1e;
+            border: 1px solid #2e2e35;
+            border-radius: 999px;
+            padding: 4px 12px;
+        }
+
+        /* ─── SONG GRID ─── */
         #library {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
-            padding: 20px;
         }
 
+        /* ─── SONG CARD ─── */
         .song {
-            background: #1e1e1e;
-            border-radius: 12px;
+            background: #1a1a1e;
+            border-radius: 14px;
+            border: 1px solid #2a2a30;
             overflow: hidden;
             position: relative;
-            transition: background 0.3s;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+            display: flex;
+            flex-direction: column;
         }
 
         .song:hover {
-            background: #282828;
+            transform: translateY(-4px);
+            border-color: #3a3a44;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
         }
 
+        .song img {
+            width: 100%;
+            height: 185px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(135deg, #1e1a30 0%, #13101e 100%);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+ 
+        .card-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            object-position: center;
+            display: block;
+            background: #13101e;
+        }
+
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: rgba(138,132,226,0.35);
+        }
+
+
+        /* play button */
         .home-play-btn {
             position: absolute;
-            bottom: 55px;
-            right: 25px;
-            background-color: #1DB954;
-            color: black;
+            bottom: 12px;
+            right: 12px;
+            background: #ffffff;
+            color: #000;
             border: none;
             border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            cursor: pointer;
+            width: 42px;
+            height: 42px;
             font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.5);
             opacity: 0;
-            transition: opacity 0.3s, transform 0.2s;
+            transform: translateY(4px);
+            transition: opacity 0.22s ease, transform 0.22s ease, background 0.15s;
+            cursor: pointer;
             z-index: 5;
         }
 
         .song:hover .home-play-btn {
             opacity: 1;
+            transform: translateY(0);
         }
 
         .home-play-btn:hover {
-            transform: scale(1.1);
-            background-color: #1ed760;
-            cursor: pointer;
+            background: #8A84E2;
         }
 
-        .song img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
+        /* fav button */
+        .fav-btn {
+           position: absolute;
+           top: 12px;
+           right: 12px;
+           background: rgba(50, 50, 50, 0.75);
+           border: none;
+           border-radius: 50%;
+           width: 38px;
+           height: 38px;
+           font-size: 18px;
+           cursor: pointer;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           transition: transform 0.15s ease;
+           padding: 0;
+           z-index: 10;
+       }
 
+        .fav-btn:hover {
+           transform: scale(1.2);
+           opacity: 1;
+       }
+
+        /* song info */
         .song-info {
-            padding: 12px;
-            text-align: center;
+            padding: 14px 16px 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .song-info strong {
             display: block;
             font-size: 15px;
-            font-weight: normal;
-            margin-bottom: 4px;
+            font-weight: 600;
             color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .song-info span {
+        .song-info .artist {
             display: block;
             font-size: 13px;
-            color: #aaa;
-            margin: 3px 0;
-        }
-
-        .no-image {
-            width: 100%;
-            height: 200px;
-            background: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             color: #888;
-            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 8px;
         }
 
-        .fav-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(50, 50, 50, 0.75);
-            border: none;
-            border-radius: 50%;
-            width: 38px;
-            height: 38px;
-            font-size: 18px;
-            cursor: pointer;
+        .song-tags {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.15s ease;
-            padding: 0;
-            z-index: 10;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-top: auto;
         }
 
-        .fav-btn:hover {
-            transform: scale(1.2);
-            opacity: 1;
+        .tag {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: #222228;
+            border: 1px solid #333340;
+            color: #888;
         }
+
+        .state-msg {
+            color: #555;
+            font-size: 15px;
+            padding: 40px 0;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        /* Tablet */
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 18px 20px;
+            }
+ 
+            .brand-title {
+                font-size: 22px;
+            }
+ 
+            .nav-btn {
+                padding: 7px 13px;
+                font-size: 12px;
+            }
+ 
+            .content {
+                padding: 20px;
+            }
+ 
+            #library {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 16px;
+            }
+        }
+ 
+        /* Mobile */
+        @media (max-width: 520px) {
+            .top-bar {
+                padding: 16px;
+                flex-direction: column;
+                align-items: flex-start;
+                min-height: unset;
+            }
+ 
+            .nav-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+ 
+            .nav-btn {
+                padding: 7px 12px;
+                font-size: 12px;
+                flex: 1;
+                justify-content: center;
+            }
+ 
+            .brand-title {
+                font-size: 20px;
+            }
+ 
+            .welcome-text {
+                font-size: 13px;
+            }
+ 
+            .content {
+                padding: 16px;
+            }
+ 
+            .search-wrap {
+                max-width: 100%;
+            }
+ 
+            #library {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+ 
+            .section-header h3 {
+                font-size: 17px;
+            }
+        }
+ 
+        /* Very small screens */
+        @media (max-width: 340px) {
+            #library {
+                grid-template-columns: 1fr;
+            }
+        }
+
     </style>
 </head>
 
 <body>
 
-    <div class="navbar">
-        <h2>🎵 My Library</h2>
-        <div>
-            <button onclick="window.location.href='songs.html'">Browse Songs</button>
-            <button onclick="goToProfile()">Profile</button>
-            <button onclick="logout()">Logout</button>
+    <!-- ─── UNIFIED TOP BAR ─── -->
+    <div class="top-bar">
+        <div class="aurora">
+            <div class="aurora__item"></div>
+            <div class="aurora__item"></div>
+            <div class="aurora__item"></div>
+            <div class="aurora__item"></div>
+        </div>
+
+        <div class="brand">
+            <div class="brand-title">
+                <div class="brand-icon">🎵</div>
+                My Library
+            </div>
+            <div class="welcome-text">Welcome back, <span id="username-display">—</span></div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="nav-btn browse" onclick="window.location.href='songs.html'">
+                🎶 Browse Songs
+            </button>
+            <button class="nav-btn" onclick="goToProfile()">
+                👤 Profile
+            </button>
+            <button class="nav-btn logout" onclick="logout()">
+                ↩ Logout
+            </button>
         </div>
     </div>
 
-    <div style="padding:20px;">
-        <input type="text" id="search" placeholder="Search your library..." onkeyup="searchLibrary()"
-            style="padding:8px; width:60%;">
+    <!-- ─── MAIN CONTENT ─── -->
+    <div class="content">
+
+        <!-- Search -->
+        <div class="search-row">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search" placeholder="Search your library..." onkeyup="searchLibrary()">
+            </div>
+        </div>
+
+        <!-- Section heading -->
+        <div class="section-header">
+            <h3>Saved Songs</h3>
+            <span class="fav-count" id="fav-count">— favorites</span>
+        </div>
+
+        <!-- Grid -->
+        <div id="library"><p class="state-msg">Loading…</p></div>
     </div>
-    <h3 style="padding-left:20px;">Saved Songs</h3>
-    <div id="library">Loading...</div>
 
     <script>
-
         let currentUser = localStorage.getItem("currentUser");
 
         if (!currentUser) {
             window.location.href = "index.html";
         }
 
+        // Show username in header
+        document.getElementById("username-display").textContent = currentUser || "there";
+
         window.onload = loadLibrary;
 
         function buildCard(song) {
+            const genre = song.genre || "";
+            const mood  = song.mood  || "";
             return `
                 <div class="song">
-                    <button class="fav-btn ${song.isFavorite ? 'active' : 'inactive'}"
-                        onclick="toggleFavorite('${song.id}', this)">
-                        ${song.isFavorite ? '❤️' : '🤍'}
-                    </button>
-                    <button class="home-play-btn" onclick="playMusic('${song.artist}', '${song.title}')">▶</button>
-                    ${song.imageUrl
-                        ? `<img src="${song.imageUrl}" alt="${song.title}">`
-                        : `<div class="no-image">No Image</div>`}
+                    <div class="card-img-wrap">
+                        <button class="fav-btn ${song.isFavorite ? 'active' : 'inactive'}"
+                            onclick="toggleFavorite('${song.id}', this)">
+                            ${song.isFavorite ? '💜' : '🤍'}
+                        </button>
+                        <button class="home-play-btn" onclick="playMusic('${song.title}')">▶</button>
+                        ${song.imageUrl
+                            ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                            : `<div class="no-image">🎵</div>`}
+                    </div>
                     <div class="song-info">
                         <strong>${song.title}</strong>
-                        <span>${song.artist}</span>
-                        <span>${song.genre} · ${song.mood}</span>
-                        <span>${song.dateReleased}</span>
+                        <span class="artist">${song.artist}</span>
+                        <div class="song-tags">
+                            ${genre ? `<span class="tag">${genre}</span>` : ''}
+                            ${mood  ? `<span class="tag">${mood}</span>`  : ''}
+                        </div>
                     </div>
                 </div>
             `;
         }
 
         function loadLibrary() {
-            document.getElementById("library").innerHTML = "Loading...";
+            document.getElementById("library").innerHTML = '<p class="state-msg">Loading…</p>';
             fetch("http://localhost:8080/api/songs")
                 .then(res => res.json())
                 .then(data => {
-                    let libraryDiv = document.getElementById("library");
-                    let favorites = data.filter(song => song.isFavorite);
+                    const libraryDiv = document.getElementById("library");
+                    const favorites  = data.filter(song => song.isFavorite);
 
-                    if (!favorites || favorites.length === 0) {
-                        libraryDiv.innerHTML = "<p>No saved songs yet.</p>";
+                    document.getElementById("fav-count").textContent =
+                        `${favorites.length} favorite${favorites.length !== 1 ? 's' : ''}`;
+
+                    if (favorites.length === 0) {
+                        libraryDiv.innerHTML = '<p class="state-msg">No saved songs yet — go browse and add some! 🎵</p>';
                         return;
                     }
 
                     libraryDiv.innerHTML = favorites.map(buildCard).join("");
                 })
                 .catch(err => {
-                    document.getElementById("library").innerHTML = "Failed to load songs.";
+                    document.getElementById("library").innerHTML =
+                        '<p class="state-msg">Failed to load songs. Is the server running?</p>';
                     console.error(err);
                 });
         }
 
         function searchLibrary() {
-            let query = document.getElementById("search").value.toLowerCase().trim();
+            const query = document.getElementById("search").value.toLowerCase().trim();
 
             if (query === "") {
                 loadLibrary();
@@ -226,16 +649,16 @@
             fetch("http://localhost:8080/api/songs")
                 .then(res => res.json())
                 .then(data => {
-                    let libraryDiv = document.getElementById("library");
-                    let filtered = data.filter(song => song.isFavorite && (
-                        song.title.toLowerCase().includes(query) ||
+                    const libraryDiv = document.getElementById("library");
+                    const filtered = data.filter(song => song.isFavorite && (
+                        song.title.toLowerCase().includes(query)  ||
                         song.artist.toLowerCase().includes(query) ||
-                        song.genre.toLowerCase().includes(query) ||
+                        song.genre.toLowerCase().includes(query)  ||
                         song.mood.toLowerCase().includes(query)
                     ));
 
                     if (filtered.length === 0) {
-                        libraryDiv.innerHTML = "<p>No saved songs found.</p>";
+                        libraryDiv.innerHTML = '<p class="state-msg">No saved songs match your search.</p>';
                         return;
                     }
 
@@ -248,48 +671,60 @@
             window.location.href = "profile.html";
         }
 
-        function logout() {
-            localStorage.removeItem("currentUser");
-            window.location.href = "http://localhost:8080/index.html";
-        }
-
         async function toggleFavorite(songId, btn) {
             const isCurrentlyFav = btn.classList.contains("active");
-            const newFavState = !isCurrentlyFav;
+            const newFavState    = !isCurrentlyFav;
 
-            btn.classList.toggle("active", newFavState);
+            btn.classList.toggle("active",   newFavState);
             btn.classList.toggle("inactive", !newFavState);
-            btn.textContent = newFavState ? "❤️" : "🤍";
+            btn.textContent = newFavState ? "💜" : "🤍";
 
             try {
-                const response = await fetch(`http://localhost:8080/api/songs/${songId}/favorite?isFavorite=${newFavState}`,
+                const response = await fetch(
+                    `http://localhost:8080/api/songs/${songId}/favorite?isFavorite=${newFavState}`,
                     { method: "PATCH" }
                 );
                 if (!response.ok) throw new Error("Failed");
                 loadLibrary();
             } catch (err) {
-                btn.classList.toggle("active", isCurrentlyFav);
-                btn.textContent = isCurrentlyFav ? "❤️" : "🤍";
+                btn.classList.toggle("active",   isCurrentlyFav);
+                btn.classList.toggle("inactive", !isCurrentlyFav);
+                btn.textContent = isCurrentlyFav ? "💜" : "🤍";
                 alert("Could not update favorite. Please try again.");
             }
         }
 
         const player = new Audio();
 
-        function playMusic(artist, title) {
-            const fileName = `${title}.mp3`;
+        function playMusic(songTitle) {
+            const fileName = `${songTitle}.mp3`;
             const filePath = `audio/${fileName}`;
 
-            console.log("Playing:", filePath);
+            // THE TOGGLE LOGIC
+            if (currentPlayingTitle === songTitle) {
+                if (!player.paused) {
+                    player.pause();
+                    console.log("Paused:", songTitle);
+                } else {
+                    player.play();
+                    console.log("Resumed:", songTitle);
+                }
+                return;
+            }
 
+            // Play new song
+            currentPlayingTitle = songTitle;
             player.src = filePath;
             player.play().catch(err => {
-                console.error("Playback error:", err);
-                alert("Audio file not found! Make sure it is named: " + fileName);
+                alert("File not found: " + fileName);
             });
+
+            function logout() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "http://localhost:8080/index.html";
+            }
         }
-
     </script>
-</body>
 
+</body>
 </html>

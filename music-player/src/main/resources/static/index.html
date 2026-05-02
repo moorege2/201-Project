@@ -9,55 +9,60 @@
 
 <style>
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #1e3c72, #2a5298);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+   margin: 0;
+   font-family: Arial, sans-serif;
+   background: linear-gradient(135deg,#8A84E2, #ddd9fb);
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
 }
 
 .card {
-    background: white;
-    padding: 40px;
-    border-radius: 12px;
-    width: 350px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    text-align: center;
+   background: white;
+   padding: 40px;
+   border-radius: 12px;
+   width: 350px;
+   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+   text-align: center;
 }
 
+
 h1 {
-    margin-bottom: 20px;
-    color: #2a5298;
+   margin-bottom: 20px;
+   font-weight: 600;
+   color: #8A84E2;
 }
 
 input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+   width: 100%;
+   padding: 10px;
+   margin: 10px 0;
+   border-radius: 6px;
+   border: 1px solid #ccc;
+   box-sizing: border-box;
 }
 
 button {
-    width: 100%;
-    padding: 10px;
-    background: #2a5298;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+   width: 100%;
+   padding: 12px;
+   margin-top: 15px;
+   background: #8A84E2;
+   color: white;
+   border: none;
+   border-radius: 6px;
+   text-shadow: 0 1px 2px rgba(0,0,0,0.4); 
+   cursor: pointer;
+   font-weight: 400;
 }
 
 button:hover {
-    background: #1e3c72;
+   background: #372554;
 }
 
 a {
-    color: #2a5298;
-    text-decoration: none;
+   color: #2a5298;
+   text-decoration: none;
 }
 </style>
 </head>
@@ -67,9 +72,11 @@ a {
 <div class="card">
     <h1>Welcome Back 🎵</h1>
 
+    <form id="loginForm">
     <input type="text" id="username" placeholder="Username">
     <input type="password" id="password" placeholder="Password">
-    <button id="loginBtn">Log In</button>
+    <button type="submit">Log In</button>
+    </form>
 
     <p id="message" style="color:red;"></p>
 
@@ -77,7 +84,9 @@ a {
 </div>
 
 <script>
-document.getElementById("loginBtn").addEventListener("click", function() {
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // stops page refresh
+
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
 
@@ -86,10 +95,8 @@ document.getElementById("loginBtn").addEventListener("click", function() {
         return;
     }
 
+    const BACKEND_URL = "http://localhost:8080/api/users/login";
 
-// const BACKEND_URL = "https://music-player-m56j.onrender.com/api/users/login";
-const BACKEND_URL = "http://localhost:8080/api/users/login";
-    
     fetch(BACKEND_URL, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -99,27 +106,21 @@ const BACKEND_URL = "http://localhost:8080/api/users/login";
         })
     })
     .then(async res => {
-        if (res.ok) {
-            return res.text();
-        } else {
-            const errorData = await res.text();
-            throw new Error(errorData || "Login failed");
-        }
+        if (res.ok) return res.text();
+        const errorData = await res.text();
+        throw new Error(errorData || "Login failed");
     })
     .then(data => {
-        console.log("Server response:", data);
-
         if (data.toLowerCase().includes("successful")) {
             localStorage.setItem("currentUser", username);
-            
-            window.location.href = "songs.html"; 
+            window.location.href = "home.html";
         } else {
             document.getElementById("message").innerText = data;
         }
     })
     .catch(err => {
-        console.error("Login Error:", err);
-        document.getElementById("message").innerText = "Connection error. Is the backend running?";
+        console.error(err);
+        document.getElementById("message").innerText = "Connection error.";
     });
 });
 </script>
