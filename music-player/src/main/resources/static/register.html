@@ -1,119 +1,159 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="UTF-8">
-<title>Register</title>
+    <meta charset="UTF-8">
+    <title>Register</title>
 
-<style>
-body {
-   margin: 0;
-   font-family: Arial, sans-serif;
-   background: linear-gradient(135deg,#8A84E2, #ddd9fb);
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   height: 100vh;
-}
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8A84E2, #ddd9fb);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-.card {
-   background: white;
-   padding: 40px;
-   border-radius: 12px;
-   width: 350px;
-   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-   text-align: center;
-}
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            width: 350px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
 
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #8A84E2;
+        }
 
-h1 {
-   margin-bottom: 20px;
-   font-weight: 600;
-   color: #8A84E2;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
 
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #8A84E2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
 
-input {
-   width: 100%;
-   padding: 10px;
-   margin: 10px 0;
-   border-radius: 6px;
-   border: 1px solid #ccc;
-   box-sizing: border-box;
-}
+        button:hover {
+            background: #372554;
+        }
 
-button {
-   width: 100%;
-   padding: 12px;
-   margin-top: 15px;
-   background: #8A84E2;
-   color: white;
-   border: none;
-   border-radius: 6px;
-   text-shadow: 0 1px 2px rgba(0,0,0,0.4); 
-   cursor: pointer;
-   font-weight: 400;
-}
+        a {
+            color: #8A84E2;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-button:hover {
-   background: #372554;
-}
+        /* THE TOAST UI */
+        #toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 500;
+            z-index: 9999;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+            white-space: nowrap;
+        }
 
-a {
-   color: #2a5298;
-   text-decoration: none;
-}
-
-</style>
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="card">
-    <h1>Create Account 🎵</h1>
+    <div class="card">
+        <h1>Create Account 🎵</h1>
+        <form onsubmit="return registerUser()">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="index.html">Log in</a></p>
+    </div>
 
-    <form onsubmit="return registerUser()">
-    <input type="text" id="username" placeholder="Username" required>
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Password" required>
-    <button type="submit">Sign Up</button>
-</form>
+    <div id="toast"></div>
 
-    <p id="message" style="color:red;"></p>
+    <script>
+        function showToast(msg, isError = false) {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.style.background = isError ? "#e74c3c" : "#372554"; // Red for error, Purple for success
+            t.classList.add("show");
 
-    <p>Already have an account? <a href="index.html">Log in</a></p>
-</div>
-
-<script>
-function registerUser() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    
-
-    // fetch("https://music-player-m56j.onrender.com/api/users/register", {
-    fetch("http://localhost:8080/api/users/register", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-    username: username,
-    email: document.getElementById("email").value,
-    password: password
-})
-    })
-    .then(res => res.text())
-    .then(data => {
-
-        if (data === "Registration successful.") {
-            alert("Account created!");
-            window.location.href = "index.html";
-        } else {
-            document.getElementById("message").innerText = data;
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                t.classList.remove("show");
+            }, 3000);
         }
 
-    });
+        function registerUser() {
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
-    return false;
-}
-</script>
+            fetch("http://localhost:8080/api/users/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, email, password })
+            })
+                .then(res => res.text())
+                .then(data => {
+                    // STRICT CHECK: Ensure the response matches your Backend string exactly
+                    if (data.trim() === "Registration successful.") {
+                        showToast("Account created! Redirecting... 🎵");
+
+                        // Wait 2 seconds so they see the toast, then go to login
+                        setTimeout(() => {
+                            window.location.href = "index.html";
+                        }, 2000);
+                    } else {
+                        // This displays whatever error message the server sends back
+                        showToast(data, true);
+                    }
+                })
+                .catch(err => {
+                    showToast("Server connection failed. ❌", true);
+                });
+
+            return false;
+        }
+    </script>
 
 </body>
+
 </html>

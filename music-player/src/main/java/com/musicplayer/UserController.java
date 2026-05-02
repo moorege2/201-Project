@@ -13,12 +13,20 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+private SongService songService;
 
     // ================= GET ALL USERS =================
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    // ===== Search users =====
+@GetMapping("/search")
+public List<User> searchUsers(@RequestParam String query) {
+    return userService.searchUsers(query);
+}
 
     // ================= GET USER BY USERNAME =================
     @GetMapping("/{username}")
@@ -48,5 +56,49 @@ public String updateUsername(@PathVariable String username, @RequestBody Map<Str
 @GetMapping("/{username}/friends")
 public List<String> getFriends(@PathVariable String username) {
     return userService.getFriends(username);
+}
+
+// Add friend
+@PostMapping("/{username}/friends/{friendUsername}")
+public String addFriend(@PathVariable String username, @PathVariable String friendUsername) {
+    return userService.addFriend(username, friendUsername);
+}
+
+
+
+// ===== Follow / unfollow =====
+@PostMapping("/{username}/follow/{targetUsername}")
+public String followUser(@PathVariable String username, @PathVariable String targetUsername) {
+    return userService.followUser(username, targetUsername);
+}
+
+@DeleteMapping("/{username}/follow/{targetUsername}")
+public String unfollowUser(@PathVariable String username, @PathVariable String targetUsername) {
+    return userService.unfollowUser(username, targetUsername);
+}
+
+// ===== Approve / reject requests =====
+@PostMapping("/{username}/requests/approve/{requester}")
+public String approveRequest(@PathVariable String username, @PathVariable String requester) {
+    return userService.approveRequest(username, requester);
+}
+
+@DeleteMapping("/{username}/requests/reject/{requester}")
+public String rejectRequest(@PathVariable String username, @PathVariable String requester) {
+    return userService.rejectRequest(username, requester);
+}
+
+// ===== Privacy =====
+@PatchMapping("/{username}/privacy")
+public String updatePrivacy(@PathVariable String username, @RequestParam boolean isPrivate) {
+    return userService.updatePrivacy(username, isPrivate);
+}
+
+// ===== Favorite / unfavorite a song =====
+@PatchMapping("/{username}/favorites/{songId}")
+public String favoriteSong(@PathVariable String username, @PathVariable String songId,
+                            @RequestParam boolean isFavorite) {
+    if (isFavorite) return songService.favoriteSong(username, songId);
+    else return songService.unfavoriteSong(username, songId);
 }
 }
