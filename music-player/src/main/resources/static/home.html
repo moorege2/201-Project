@@ -443,9 +443,9 @@
         /* ── Constants ── */
 
         // Backend URl for songs
-        const API_BASE = "http://localhost:8080/api/songs";
+        const API_BASE = "https://music-player-m56j.onrender.com/api/songs";
         // Backend URL for playlists
-        const PLAYLIST_BASE = "http://localhost:8080/api/playlists";
+        const PLAYLIST_BASE = "https://music-player-m56j.onrender.com/api/playlists";
 
         // Creates a audio player object
         const player = new Audio();
@@ -591,7 +591,7 @@
 
         async function removeFavorite(songId, btn) {
             try {
-                await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=false`, {
+                await fetch(`https://music-player-m56j.onrender.com/api/users/${currentUser}/favorites/${songId}?isFavorite=false`, {
                     method: "PATCH"
                 });
                 // Shows a message that the song was removed as a favorite
@@ -808,7 +808,7 @@
 
             try {
                 // Tries to update the favorite status on the backend
-                await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=${nextState}`, {
+                await fetch(`https://music-player-m56j.onrender.com/api/users/${currentUser}/favorites/${songId}?isFavorite=${nextState}`, {
                     method: "PATCH"
                 });
 
@@ -1087,7 +1087,7 @@
         // Function to log the user out of their account if they click logout
         function logout() {
             localStorage.removeItem("currentUser");
-            window.location.href = "http://localhost:8080/index.html";
+            window.location.href = "https://music-player-m56j.onrender.com/index.html";
         }
     </script>
 </body>
