@@ -841,34 +841,63 @@
 
   <script>
     const BASE = "http://localhost:8080";
+    // Gets currently logged on user 
     let currentUser = localStorage.getItem("currentUser");
+
+    // If no user is logged in, then go to login page
     if (!currentUser) window.location.href = "index.html";
+
+    // Shows username
     document.getElementById("username-display").textContent = currentUser || "—";
 
     let myFollowers = [], myFollowing = [], myPending = [], isPrivateAccount = false, searchTimeout = null;
 
+    // Runs when the page loadss
     window.onload = async function () {
+      // Sets username in profile header
       document.getElementById("usernameDisplay").textContent = currentUser;
+
+      // Sets avatar placeholder as first letter of username
       document.getElementById("avatarPlaceholder").textContent = currentUser.charAt(0).toUpperCase();
+
       document.getElementById("newUsernameInput").value = currentUser;
-      loadAvatar(); loadUserData();
+
+      // Loads avatar image
+      loadAvatar();
+      loadUserData();
     };
 
+    // Gets full user data from backend
     function loadUserData() {
+
       fetch(`${BASE}/api/users/${currentUser}`).then(r => r.json()).then(user => {
-        myFollowers = user.followers || []; myFollowing = user.following || []; myPending = user.pendingRequests || []; isPrivateAccount = user.private || false;
+        // Stores followers, following, and requests
+        myFollowers = user.followers || [];
+        myFollowing = user.following || [];
+        myPending = user.pendingRequests || [];
+
+        // Store privacy settings
+        isPrivateAccount = user.private || false;
+        // Updates song status
         document.getElementById("songCount").textContent = (user.favoritedSongIds || []).length;
         document.getElementById("followerCount").textContent = myFollowers.length;
         document.getElementById("followingCount").textContent = myFollowing.length;
+
+        // Update privacy badge UI
         const badge = document.getElementById("privacyBadge");
         badge.textContent = isPrivateAccount ? "🔒 Private" : "🌐 Public";
         badge.className = "privacy-badge " + (isPrivateAccount ? "private" : "public");
         document.getElementById("privacyToggle").checked = isPrivateAccount;
+        // Show the number of pending requests if there's any
         document.getElementById("requestBadge").textContent = myPending.length > 0 ? `(${myPending.length})` : "";
-        renderFollowers(myFollowers); renderFollowing(myFollowing); renderRequests(myPending);
+
+        renderFollowers(myFollowers);
+        renderFollowing(myFollowing);
+        renderRequests(myPending);
       }).catch(e => console.error(e));
     }
 
+    // Switch between the profile tabs 
     function switchProfileTab(tab, btn) {
       document.querySelectorAll(".profile-tab-btn").forEach(b => b.classList.remove("active"));
       document.querySelectorAll(".profile-tab-content").forEach(c => c.classList.remove("active"));
@@ -876,65 +905,123 @@
       if (btn) btn.classList.add("active");
     }
 
+    // Render the followers list UI
     function renderFollowers(list) {
       const grid = document.getElementById("followersGrid");
-      if (!list || !list.length) { grid.innerHTML = '<div class="empty">No followers yet.</div>'; return; }
+      // If it's empty, then show a message
+      if (!list || !list.length) {
+        grid.innerHTML = '<div class="empty">No followers yet.</div>';
+        return;
+      }
+      // Build followers card
       grid.innerHTML = list.map(name => { const av = localStorage.getItem("avatar_" + name); return `<div class="follower-card" onclick="openUserModal('${name}')"><div class="follower-avatar">${av ? `<img src="${av}">` : name.charAt(0).toUpperCase()}</div><div class="follower-name">${name}</div></div>`; }).join("");
     }
 
+    // Render following list UI
     function renderFollowing(list) {
       const grid = document.getElementById("followingGrid");
       if (!list || !list.length) { grid.innerHTML = '<div class="empty">Not following anyone yet.</div>'; return; }
       grid.innerHTML = list.map(name => { const av = localStorage.getItem("avatar_" + name); return `<div class="follower-card"><div class="follower-avatar" onclick="openUserModal('${name}')">${av ? `<img src="${av}">` : name.charAt(0).toUpperCase()}</div><div class="follower-name">${name}</div><button class="unfollow-btn" onclick="unfollowUser('${name}')">Unfollow</button></div>`; }).join("");
     }
 
+    // Render follow requests UI
     function renderRequests(list) {
       const div = document.getElementById("requestsList");
       if (!list || !list.length) { div.innerHTML = '<div class="empty">No pending follow requests.</div>'; return; }
       div.innerHTML = list.map(name => `<div class="request-card"><span style="font-weight:500;">${name}</span><div class="request-actions"><button class="btn-approve" onclick="approveRequest('${name}')">✓ Approve</button><button class="btn-reject" onclick="rejectRequest('${name}')">✕ Reject</button></div></div>`).join("");
     }
 
-    function approveRequest(r) { fetch(`${BASE}/api/users/${currentUser}/requests/approve/${r}`, { method: "POST" }).then(x => x.text()).then(() => { showToast(`Approved ${r}`, "success"); loadUserData(); }).catch(() => showToast("Failed.", "error")); }
-    function rejectRequest(r) { fetch(`${BASE}/api/users/${currentUser}/requests/reject/${r}`, { method: "DELETE" }).then(x => x.text()).then(() => { showToast(`Rejected ${r}`, ""); loadUserData(); }).catch(() => showToast("Failed.", "error")); }
-    function unfollowUser(t) { fetch(`${BASE}/api/users/${currentUser}/follow/${t}`, { method: "DELETE" }).then(x => x.text()).then(() => { showToast(`Unfollowed ${t}`, ""); loadUserData(); }).catch(() => showToast("Failed.", "error")); }
+    // Approving follow requests
+    function approveRequest(r) {
+      fetch(`${BASE}/api/users/${currentUser}/requests/approve/${r}`, { method: "POST" }).then(x => x.text()).then(() => { showToast(`Approved ${r}`, "success"); loadUserData(); }).catch(() => showToast("Failed.", "error"));
+    }
 
+    // Rejecting follow requests
+    function rejectRequest(r) {
+      fetch(`${BASE}/api/users/${currentUser}/requests/reject/${r}`, { method: "DELETE" }).then(x => x.text()).then(() => { showToast(`Rejected ${r}`, ""); loadUserData(); }).catch(() => showToast("Failed.", "error"));
+    }
+
+    // Unfollowing a user
+    function unfollowUser(t) {
+      fetch(`${BASE}/api/users/${currentUser}/follow/${t}`, { method: "DELETE" }).then(x => x.text()).then(() => { showToast(`Unfollowed ${t}`, ""); loadUserData(); }).catch(() => showToast("Failed.", "error"));
+    }
+
+    // Handles search input
     function onSearchInput(value) {
       clearTimeout(searchTimeout);
       const spinner = document.getElementById("searchSpinner");
-      if (!value.trim()) { document.getElementById("searchResults").innerHTML = ""; spinner.classList.remove("active"); return; }
+
+      // If the search is empty, clear results
+      if (!value.trim()) { 
+        document.getElementById("searchResults").innerHTML = ""; 
+        spinner.classList.remove("active"); 
+        return; 
+      }
+      // Show the loading spinner
       spinner.classList.add("active");
+
+      // Display search to avoid too many requests
       searchTimeout = setTimeout(() => searchUsers(value.trim()), 300);
     }
 
+    // Search users from backend
     function searchUsers(query) {
       const div = document.getElementById("searchResults"), spinner = document.getElementById("searchSpinner");
       fetch(`${BASE}/api/users/search?query=${encodeURIComponent(query.toLowerCase())}`).then(r => { if (!r.ok) throw new Error(); return r.json(); })
         .then(users => {
           spinner.classList.remove("active");
-          if (!Array.isArray(users)) { div.innerHTML = "<p style='color:var(--text-3);'>Unexpected response.</p>"; return; }
+          if (!Array.isArray(users)) { 
+            div.innerHTML = "<p style='color:var(--text-3);'>Unexpected response.</p>"; 
+            return; 
+          }
+
           const others = users.filter(u => u.username !== currentUser);
-          if (!others.length) { div.innerHTML = `<div class="empty">No users found for "<strong>${query}</strong>".</div>`; return; }
+          if (!others.length) { 
+            div.innerHTML = `<div class="empty">No users found for "<strong>${query}</strong>".</div>`; 
+            return; 
+          }
+
+          // Build user result cards
           div.innerHTML = others.map(u => {
             const isF = myFollowing.includes(u.username), isP = (u.pendingRequests || []).includes(currentUser);
             let cls = "follow", txt = "+ Follow";
-            if (isF) { cls = "following"; txt = "Unfollow"; } else if (isP) { cls = "requested"; txt = "Requested"; }
+            if (isF) { 
+              cls = "following"; txt = "Unfollow"; 
+            } else if (isP) { 
+              cls = "requested"; txt = "Requested"; 
+            }
             return `<div class="user-result"><div style="display:flex;align-items:center;gap:12px;"><div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,rgba(138,132,226,0.35),rgba(196,181,253,0.35));display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--purple-lt);">${u.username.charAt(0).toUpperCase()}</div><div><div style="font-weight:500;color:var(--text);">${u.username}</div><div style="font-size:0.78rem;color:var(--text-3);">${u.private ? '🔒 Private' : '🌐 Public'}</div></div></div><button class="follow-btn ${cls}" onclick="followUser('${u.username}',this)">${txt}</button></div>`;
           }).join("");
         }).catch(() => { spinner.classList.remove("active"); div.innerHTML = "<div class='empty'>Search failed.</div>"; });
     }
 
+    // Follow/unfollow logic
     function followUser(target, btn) {
       if (myFollowing.includes(target)) { unfollowUser(target); return; }
       btn.disabled = true; btn.textContent = "...";
       fetch(`${BASE}/api/users/${currentUser}/follow/${target}`, { method: "POST" }).then(r => r.text()).then(data => {
         btn.disabled = false;
-        if (data === "Now following.") { myFollowing.push(target); btn.className = "follow-btn following"; btn.textContent = "Unfollow"; showToast(`Now following ${target}!`, "success"); }
-        else if (data === "Follow request sent.") { btn.className = "follow-btn requested"; btn.textContent = "Requested"; showToast("Follow request sent!", "success"); }
-        else { btn.className = "follow-btn follow"; btn.textContent = "+ Follow"; showToast(data || "Something went wrong.", "error"); }
+        if (data === "Now following.") { 
+          myFollowing.push(target); 
+          btn.className = "follow-btn following"; 
+          btn.textContent = "Unfollow"; 
+          showToast(`Now following ${target}!`, "success"); 
+        } else if (data === "Follow request sent.") { 
+          btn.className = "follow-btn requested"; 
+          btn.textContent = "Requested"; 
+          showToast("Follow request sent!", "success"); 
+        } else { 
+          btn.className = "follow-btn follow";
+          btn.textContent = "+ Follow"; 
+          showToast(data || "Something went wrong.", "error"); 
+        }
+
         loadUserData();
-      }).catch(() => { btn.disabled = false; btn.className = "follow-btn follow"; btn.textContent = "+ Follow"; showToast("Failed.", "error"); });
+      })
+      .catch(() => { btn.disabled = false; btn.className = "follow-btn follow"; btn.textContent = "+ Follow"; showToast("Failed.", "error"); });
     }
 
+    // Updates privacy settings (public/private)
     function updatePrivacy(isPrivate) {
       fetch(`${BASE}/api/users/${currentUser}/privacy?isPrivate=${isPrivate}`, { method: "PATCH" }).then(r => r.text()).then(data => {
         isPrivateAccount = isPrivate;
@@ -942,9 +1029,11 @@
         badge.textContent = isPrivate ? "🔒 Private" : "🌐 Public";
         badge.className = "privacy-badge " + (isPrivate ? "private" : "public");
         showToast(data, "success");
-      }).catch(() => showToast("Failed.", "error"));
+      })
+      .catch(() => showToast("Failed.", "error"));
     }
 
+    // Opens user modal popup
     function openUserModal(username) {
       document.getElementById("modalUsername").textContent = username;
       const av = localStorage.getItem("avatar_" + username);
@@ -955,14 +1044,21 @@
       fetch(`${BASE}/api/users/${username}`).then(r => r.json()).then(u => { document.getElementById("modalFollowers").textContent = (u.followers || []).length; document.getElementById("modalFollowing").textContent = (u.following || []).length; }).catch(() => { });
     }
 
-    function closeUserModal() { document.getElementById("userModal").classList.remove("active"); }
+    // Close modal
+    function closeUserModal() { 
+      document.getElementById("userModal").classList.remove("active"); 
+    }
+
+    // Close modal when clicking outside
     document.getElementById("userModal").addEventListener("click", function (e) { if (e.target === this) closeUserModal(); });
 
+    // Loading the avatar
     function loadAvatar() {
       const saved = localStorage.getItem("avatar_" + currentUser);
       if (saved) { document.getElementById("avatarImg").src = saved; document.getElementById("avatarImg").style.display = "block"; document.getElementById("avatarPlaceholder").style.display = "none"; }
     }
 
+    // Handles uploading a new avatar image
     function handleAvatarChange(event) {
       const file = event.target.files[0]; if (!file) return;
       const reader = new FileReader();
@@ -975,12 +1071,14 @@
       reader.readAsDataURL(file);
     }
 
+    // Toggle edit username form 
     function toggleEditUsername() {
       const form = document.getElementById("editUsernameForm"), row = document.getElementById("usernameRow"), isActive = form.classList.contains("active");
       form.classList.toggle("active"); row.style.display = isActive ? "flex" : "none"; document.getElementById("editMsg").textContent = "";
       if (!isActive) { document.getElementById("newUsernameInput").value = currentUser; document.getElementById("newUsernameInput").focus(); }
     }
 
+    // Saves the updates username
     function saveUsername() {
       const newUsername = document.getElementById("newUsernameInput").value.trim(), msgEl = document.getElementById("editMsg");
       if (!newUsername) { msgEl.style.color = "var(--danger)"; msgEl.textContent = "Username cannot be empty."; return; }
@@ -998,13 +1096,19 @@
       }).catch(() => { msgEl.style.color = "var(--danger)"; msgEl.textContent = "Error updating username."; });
     }
 
-    function logout() { localStorage.removeItem("currentUser"); window.location.href = "index.html"; }
+    // Logout the user
+    function logout() { 
+      localStorage.removeItem("currentUser"); 
+      window.location.href = "index.html"; 
+    }
 
+    // Toast notification
     function showToast(msg, type = "") {
       const toast = document.getElementById("toast");
       toast.textContent = msg; toast.className = "toast show " + type;
       setTimeout(() => toast.className = "toast " + type, 3000);
     }
+
   </script>
 </body>
 

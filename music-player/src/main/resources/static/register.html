@@ -97,22 +97,36 @@
 
     <div class="card">
         <h1>Create Account 🎵</h1>
+        <!-- Registration form -->
         <form onsubmit="return registerUser()">
+            <!-- Username input -->
             <input type="text" id="username" placeholder="Username" required>
+            <!-- Email input -->
             <input type="email" id="email" placeholder="Email" required>
+            <!-- Password input -->
             <input type="password" id="password" placeholder="Password" required>
+            <!-- Sign up button -->
             <button type="submit">Sign Up</button>
+
         </form>
+
+        <!-- Link to login page -->
         <p>Already have an account? <a href="index.html">Log in</a></p>
     </div>
 
     <div id="toast"></div>
 
     <script>
+        // Shows popup toast message
         function showToast(msg, isError = false) {
             const t = document.getElementById("toast");
+            // Sets message text
             t.textContent = msg;
+
+            // Changes color depending on success or error
             t.style.background = isError ? "#e74c3c" : "#372554"; // Red for error, Purple for success
+            
+            // Shows toast
             t.classList.add("show");
 
             // Auto-hide after 3 seconds
@@ -121,23 +135,27 @@
             }, 3000);
         }
 
+        // Handles user registration
         function registerUser() {
+            // Gets input values from the form
             const username = document.getElementById("username").value;
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
 
+            // Sends to backend 
             fetch("http://localhost:8080/api/users/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password })
             })
+                // Converts to text
                 .then(res => res.text())
                 .then(data => {
-                    // STRICT CHECK: Ensure the response matches your Backend string exactly
+                    // Ensure the response matches backend string exactly
                     if (data.trim() === "Registration successful.") {
                         showToast("Account created! Redirecting... 🎵");
 
-                        // Wait 2 seconds so they see the toast, then go to login
+                        // Waits 2 seconds so they see the toast, then go to login
                         setTimeout(() => {
                             window.location.href = "index.html";
                         }, 2000);
@@ -152,6 +170,7 @@
 
             return false;
         }
+        
     </script>
 
 </body>

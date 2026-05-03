@@ -10,7 +10,6 @@
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* --- Playlist Panel UI Cleanup --- */
         #playlist-panel {
             position: fixed;
             top: 0;
@@ -269,7 +268,6 @@
             flex: 1;
         }
 
-        /* Constrain the mini-player art */
         #mp-art-wrap {
             width: 40px;
             height: 40px;
@@ -301,9 +299,13 @@
             <div class="brand-title"><span class="brand-icon">♫</span> Song Library</div>
         </div>
         <div class="nav-actions">
+            <!-- Going to user library -->
             <button class="nav-btn browse" onclick="window.location.href='home.html'">🎵 My Library</button>
+            <!-- Creating a playlist -->
             <button class="nav-btn browse" onclick="togglePlaylistPanel(false)">🎶 Playlists</button>
+            <!-- Going to profile -->
             <button class="nav-btn profile" onclick="window.location.href='profile.html'">👤 Profile</button>
+            <!-- Logging out -->
             <button class="nav-btn logout" onclick="logout()">↩ Logout</button>
         </div>
     </div>
@@ -316,6 +318,7 @@
             </div>
             <select id="search-type"
                 style="height: 48px; border-radius: 12px; background: #222; color: white; border: 1px solid #333; padding: 0 10px;">
+                <!-- Search options -->
                 <option value="all">All Songs</option>
                 <option value="title">By Title</option>
                 <option value="artist">By Artist</option>
@@ -389,7 +392,6 @@
         let selectedSongId = null;
         let allSongs = [];
         let isMuted = false;
-        // Add these variables at the top of your script area
 
         let pendingSongId = null;
         let pendingDeleteType = null; // 'playlist' or 'song'
@@ -399,7 +401,7 @@
 
         window.onload = loadAllSongs;
 
-        /* ── duration helper ── */
+        /* Duration helper */
         function fmt(s) {
             if (!isFinite(s) || isNaN(s)) return "0:00";
             const m = Math.floor(s / 60);
@@ -411,11 +413,11 @@
 
         async function loadAllSongs() {
             try {
-                // 1. Fetch all songs
+                // Gets all songs
                 const res = await fetch(API_BASE);
                 allSongs = await res.json();
 
-                // 2. Fetch user favorites to show correct heart state
+                // Gets user favorites to show correct heart state
                 const favRes = await fetch(`http://localhost:8080/api/songs/favorites/${currentUser}`);
                 userFavorites = await favRes.json();
 
@@ -423,8 +425,6 @@
             } catch (err) { console.error(err); }
         }
 
-        /* ── search fixed ── */
-        /* ── search fixed ── */
         function searchSongs() {
             const q = document.getElementById("search").value.toLowerCase().trim();
             const type = document.getElementById("search-type").value;
@@ -442,16 +442,13 @@
                     ).toLowerCase();
                     return combined.includes(q);
                 }
-
-                // If a specific type is selected (title, artist, genre, or mood)
-                // Adding || "" ensures that if the field is null, it treats it as an empty string
                 return (song[type] || "").toLowerCase().includes(q);
             });
 
             renderCards(filtered);
         }
 
-        /* ── play a card ── */
+        // Playing a card
         function playCard(id, title) {
             if (currentPlayingTitle === title) {
                 togglePlayerPlayPause();
@@ -475,7 +472,7 @@
             refreshPlayingState();
         }
 
-        /* ── volume & mute ── */
+        // Handles the volume
         function setVolume(v) {
             player.volume = v;
             isMuted = (v == 0);
@@ -483,6 +480,7 @@
             document.querySelector(".mp-vol-icon").textContent = isMuted ? "🔇" : "🔊";
         }
 
+        // Handles the mute
         function toggleMute() {
             isMuted = !isMuted;
             player.muted = isMuted;
@@ -494,7 +492,6 @@
             }
         }
 
-        /* ── audio events (the missing pieces) ── */
         player.addEventListener("timeupdate", () => {
             if (!player.duration) return;
             const pct = (player.currentTime / player.duration) * 100;
@@ -515,7 +512,7 @@
             document.getElementById("mp-current").textContent = "0:00";
         });
 
-        /* ── draggable seek ── */
+        /* Draggable seek */
         function seekTo(e) {
             if (!player.duration) return;
             const rect = document.getElementById("mp-track").getBoundingClientRect();
@@ -545,18 +542,19 @@
             try {
                 const res = await fetch(`${PLAYLIST_BASE}/${pendingDeleteId}`, { method: "DELETE" });
                 if (res.ok) {
+                    // Shows a notification that it was deleted
                     showToast("Deleted 🗑️");
                     closeModal();
-                    loadPlaylists(); // Forced refresh
+                    loadPlaylists();
                 }
             } catch (e) { showToast("Error deleting"); }
         }
 
         function refreshPlayingState() {
-            // 1. Update the Mini Player button
+            // Updates the Mini Player button
             document.getElementById("mp-playpause").textContent = player.paused ? "▶" : "⏸";
 
-            // 2. Update all song cards on the page
+            // Updates all song cards on the page
             document.querySelectorAll(".song").forEach(card => {
                 const isThis = card.dataset.title === currentPlayingTitle;
                 const btn = card.querySelector(".card-play-btn");
@@ -565,7 +563,7 @@
                     // If this is the active song and it's playing, show pause
                     if (isThis && !player.paused) {
                         btn.textContent = "⏸";
-                        card.classList.add("is-playing"); // Optional: adds a glow if in your CSS
+                        card.classList.add("is-playing");
                     } else {
                         btn.textContent = "▶";
                         card.classList.remove("is-playing");
@@ -574,7 +572,6 @@
             });
         }
 
-        /* ── rest of your playlist logic ── */
         function renderCards(songs) {
             const container = document.getElementById("library");
             if (!songs || songs.length === 0) {
@@ -645,12 +642,11 @@
             const nextState = !isCurrentlyFav;
 
             try {
-                // Updated API call to match your backend logic (toggling state)
                 await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=${nextState}`, {
                     method: "PATCH"
                 });
 
-                // Update visual state immediately
+                // Update visual state 
                 btn.textContent = nextState ? '💜' : '🤍';
 
                 // Refresh our local favorites list
@@ -689,7 +685,7 @@
             if (!name) { showToast("Please enter a name! ⚠️"); return; }
 
             try {
-                // 1. Check for duplicates locally first
+                // Check for duplicates
                 const checkRes = await fetch(PLAYLIST_BASE + "/");
                 const existing = await checkRes.json();
 
@@ -699,14 +695,13 @@
                     return;
                 }
 
-                // 2. Create the playlist (Sending isPrivate as a boolean)
-                // Inside createPlaylist()
+                // Create the playlist 
                 const res = await fetch(`${PLAYLIST_BASE}/?username=${currentUser}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         name: name,
-                        private: isPrivate, // Changed from isPrivate to private to match your Java setter
+                        private: isPrivate,
                         songIds: []
                     })
                 });
@@ -721,6 +716,7 @@
                 showToast("Error creating playlist ❌");
             }
         }
+
         async function loadPlaylists() {
             const filter = document.getElementById("playlist-filter").value.toLowerCase();
             const res = await fetch(PLAYLIST_BASE + "/");
@@ -764,7 +760,6 @@
             }
 
             return playlist.songIds.map(songId => {
-                // Use == instead of === just in case one is a string and one is a number
                 const song = allSongs.find(s => s.id == songId);
                 const songTitle = song ? song.title : "Unknown Song";
                 return `
@@ -781,23 +776,27 @@
             el.classList.toggle("show");
         }
 
+        // Adds selected song to a specific playlist
         async function addSongToPlaylist(playlistId) {
-            // selectedSongId is set when you click the ➕ on a song card
+            // Checks if a song was selected
             if (!selectedSongId) {
                 showToast("Select a song using ➕ first! 🎵");
                 return;
             }
 
             try {
+                // Sends request to backend to add the song
                 const res = await fetch(`${PLAYLIST_BASE}/${playlistId}/songs/${selectedSongId}`, {
                     method: "PUT"
                 });
 
                 if (res.ok) {
+                    // Show message saying it was added
                     showToast("Song added! ✅");
-                    loadPlaylists(); // Update the song count in the panel
-                    // Optional: closeAllPanels(); 
+                    // Refresh the playlist
+                    loadPlaylists();
                 } else {
+                    // Song already is in playlist, so tell user
                     showToast("Song is already in this playlist ⚠️");
                 }
             } catch (err) {
@@ -805,7 +804,7 @@
             }
         }
 
-        // --- MODAL FOR PLAYLISTS ---
+        // Opens a confirmation modal when deleting a playlist
         function confirmDelete(id, name) {
             pendingDeleteId = id;
             pendingDeleteType = 'playlist';
@@ -820,7 +819,7 @@
             document.getElementById("overlay").classList.add("show");
         }
 
-        // --- MODAL FOR SONGS ---
+        // Opens a confirmation modal when removing a song
         function confirmDeleteSong(playlistId, songId, songTitle) {
             pendingDeleteId = playlistId;
             pendingSongId = songId;
@@ -836,12 +835,12 @@
             document.getElementById("overlay").classList.add("show");
         }
 
-        // --- THE ACTUAL DELETE LOGIC ---
+        // The delete logic for deleting a playlist
         async function executeDelete() {
             try {
                 let url = "";
 
-                // Decide which URL to call based on what we are deleting
+                // Decides which URL to call based on what's being deleted
                 if (pendingDeleteType === 'playlist') {
                     url = `${PLAYLIST_BASE}/${pendingDeleteId}?username=${currentUser}`;
                 } else {
@@ -863,13 +862,18 @@
             }
         }
 
+        // Shows toast notification
         function showToast(msg) {
             const t = document.getElementById("toast");
             t.textContent = msg; t.classList.add("show");
             setTimeout(() => t.classList.remove("show"), 3000);
         }
 
-        function logout() { localStorage.clear(); window.location.href = "index.html"; }
+        // Handles user logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
     </script>
 </body>
 

@@ -68,53 +68,78 @@
 
     <div class="card">
         <h1>Welcome Back 🎵</h1>
+        <!-- Login form -->
         <form id="loginForm">
+            <!-- Username input field -->
             <input type="text" id="username" name="username" placeholder="Username" required>
+
+            <!-- Password input field -->
             <input type="password" id="password" name="password" placeholder="Password" required>
+
+            <!-- Submit button -->
             <button type="submit">Login</button>
         </form>
 
+        <!-- Message for erros or feedback -->
         <p id="message" style="color:red;"></p>
 
+        <!-- Link to registration page -->
         <p>Don't have an account? <a href="register.html">Sign up</a></p>
     </div>
 
     <script>
+        // Gets the login form element
         const form = document.getElementById("loginForm");
 
+        // Listens for when the form is submitted
         form.addEventListener("submit", function (e) {
-            e.preventDefault(); // 🚨 stops page refresh (THIS is the key)
+            // Prevents page reload
+            e.preventDefault();
 
+            // Gets the entered username
             let username = document.getElementById("username").value;
+            // Gets the entered password
             let password = document.getElementById("password").value;
 
+            // Ensures both inputs are filled in
             if (!username || !password) {
                 document.getElementById("message").innerText = "Please enter username and password.";
                 return;
             }
 
+            // Sends the login request to the backend API
             fetch("http://localhost:8080/api/users/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                // Converts username to JSON
                 body: JSON.stringify({ username, password })
             })
+                // Handles server response
                 .then(async res => {
+                    // Reads as plain text
                     const text = await res.text();
+                    // Throw an error if response isn't OK
                     if (!res.ok) throw new Error(text);
                     return text;
                 })
+                 
+                // Handles a successful response
                 .then(data => {
                     if (data.toLowerCase().includes("successful")) {
                         localStorage.setItem("currentUser", username);
+                        // Redirect to home page 
                         window.location.href = "home.html";
                     } else {
+                        // Show a server message if login failed
                         document.getElementById("message").innerText = data;
                     }
                 })
+                // Handles network or server errors
                 .catch(err => {
                     document.getElementById("message").innerText = err.message || "Login failed";
                 });
         });
+        
     </script>
 
 </body>
