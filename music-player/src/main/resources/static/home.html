@@ -9,28 +9,247 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-</head>
-<style>
-    #toast {
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: #8e44ad;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 999px;
-    font-weight: 600;
-    z-index: 2000;
-    transition: 0.4s;
-    opacity: 0;
-}
+    <style>
+        #toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #8e44ad;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-weight: 600;
+            z-index: 2000;
+            transition: 0.4s;
+            opacity: 0;
+        }
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
 
-#toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-}
-</style>
+        /* ── Tab Bar ── */
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 28px;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-2);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab-btn:hover { border-color: var(--border2); color: var(--text); }
+        .tab-btn.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+
+        /* ── Playlist Card ── */
+        #playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 18px;
+        }
+        .playlist-card {
+            background: var(--surface);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .playlist-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--border2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+        }
+
+        /* ── Mosaic art ── */
+        .playlist-card-art {
+            aspect-ratio: 1/1;
+            position: relative;
+            background: linear-gradient(135deg, #1e1a30, #372554);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            width: 100%;
+            height: 100%;
+        }
+        .mosaic-grid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .mosaic-grid .mosaic-empty {
+            background: linear-gradient(135deg, #2a2040, #1a1030);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            opacity: 0.4;
+        }
+        .mosaic-single {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .mosaic-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 54px;
+            opacity: 0.5;
+        }
+
+        /* Overlay + play btn on playlist card */
+        .playlist-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0);
+            transition: background 0.2s;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding: 12px;
+            z-index: 5;
+        }
+        .playlist-card:hover .playlist-card-overlay {
+            background: rgba(0,0,0,0.38);
+        }
+        .playlist-play-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: #fff;
+            color: #000;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+            transition: background 0.15s, transform 0.15s, opacity 0.2s;
+            opacity: 0;
+            transform: translateY(4px) scale(0.9);
+            flex-shrink: 0;
+        }
+        .playlist-card:hover .playlist-play-btn {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .playlist-play-btn:hover {
+            transform: scale(1.08) !important;
+            background: var(--purple-lt);
+        }
+        .song-count-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 12px;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: rgba(255,255,255,0.85);
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            border-radius: 6px;
+            padding: 3px 7px;
+            z-index: 6;
+        }
+
+        .privacy-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .badge-private { background: #444; color: #ff4d4d; border: 1px solid #ff4d4d33; }
+        .badge-public  { background: #444; color: #4ade80; border: 1px solid #4ade8033; }
+
+        .playlist-card-info {
+            padding: 13px 15px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .playlist-card-info strong {
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .playlist-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Drill-in header ── */
+        .drill-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            padding: 9px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-2);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .back-btn:hover { background: var(--surface2); color: var(--text); }
+        .drill-title    { font-size: 20px; font-weight: 700; }
+        .drill-subtitle { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+        .drill-play-all {
+            margin-left: auto;
+            padding: 9px 20px;
+            border-radius: 999px;
+            border: none;
+            background: var(--purple);
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .drill-play-all:hover { background: var(--purple-lt); color: #000; }
+    </style>
+</head>
 
 <body>
 
@@ -61,16 +280,53 @@
         <div class="search-row">
             <div class="search-wrap">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="search" placeholder="Search by title, artist, genre, mood…"
-                    oninput="searchLibrary()">
+                <input type="text" id="search" placeholder="Search by title, artist, genre, mood…" oninput="onSearch()">
             </div>
         </div>
-        <div class="section-header">
-            <h3>Saved Songs</h3>
-            <span class="favCount" id="fav-count">— favorites</span>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <button class="tab-btn active" id="tab-favs"      onclick="switchTab('favorites')">💜 Favorites</button>
+            <button class="tab-btn"        id="tab-playlists" onclick="switchTab('playlists')">🎶 Playlists</button>
         </div>
-        <div id="library">
-            <p class="state-msg">Loading…</p>
+
+        <!-- ── Favorites View ── -->
+        <div id="view-favorites">
+            <div class="section-header">
+                <h3>Saved Songs</h3>
+                <span class="favCount" id="fav-count">— favorites</span>
+            </div>
+            <div id="library">
+                <p class="state-msg">Loading…</p>
+            </div>
+        </div>
+
+        <!-- ── Playlists View ── -->
+        <div id="view-playlists" style="display:none;">
+
+            <!-- Playlist grid -->
+            <div id="playlist-grid-view">
+                <div class="section-header">
+                    <h3>My Playlists</h3>
+                    <span class="favCount" id="playlist-count">— playlists</span>
+                </div>
+                <div id="playlist-grid">
+                    <p class="state-msg">Loading…</p>
+                </div>
+            </div>
+
+            <!-- Drill-in view -->
+            <div id="playlist-drill-view" style="display:none;">
+                <div class="drill-header">
+                    <button class="back-btn" onclick="exitDrill()">← Back</button>
+                    <div>
+                        <div class="drill-title"    id="drill-name">—</div>
+                        <div class="drill-subtitle" id="drill-meta">—</div>
+                    </div>
+                    <button class="drill-play-all" onclick="playAllDrill()">▶ Play All</button>
+                </div>
+                <div id="drill-library"></div>
+            </div>
         </div>
     </div>
 
@@ -80,7 +336,7 @@
             <div class="mp-art-placeholder">🎵</div>
         </div>
         <div class="mp-info">
-            <div class="mp-title" id="mp-title">—</div>
+            <div class="mp-title"  id="mp-title">—</div>
             <div class="mp-artist" id="mp-artist">—</div>
         </div>
         <div class="mp-controls">
@@ -101,91 +357,74 @@
         </div>
     </div>
 
+    <div id="toast"></div>
+
     <script>
+        /* ── constants ── */
+        const API_BASE      = "http://localhost:8080/api/songs";
+        const PLAYLIST_BASE = "http://localhost:8080/api/playlists";
+
         /* ── state ── */
         const player = new Audio();
         let currentPlayingTitle = null;
-        let currentPlayingSong = null;
+        let currentPlayingSong  = null;
         let isMuted = false;
+
+        let allFavorites  = [];
+        let allSongs      = [];
+        let allPlaylists  = [];
+        let currentTab    = 'favorites';
+        let drillSongs    = [];
+        let drillQueue    = [];
+        let drillQueueIdx = -1;
 
         const currentUser = localStorage.getItem("currentUser");
         if (!currentUser) window.location.href = "index.html";
         document.getElementById("username-display").textContent = currentUser || "there";
 
-        window.onload = loadLibrary;
+        window.onload = init;
 
-        /* ── format seconds → m:ss ── */
-        function fmt(s) {
-            if (!isFinite(s) || isNaN(s)) return "—";
-            const m = Math.floor(s / 60);
-            const sec = Math.floor(s % 60).toString().padStart(2, "0");
-            return `${m}:${sec}`;
+        async function init() {
+            try {
+                const r = await fetch(API_BASE);
+                allSongs = await r.json();
+            } catch(e) { console.error("Could not load all songs", e); }
+            loadFavorites();
         }
 
-        /* ── build card HTML ── */
-        function buildCard(song) {
-            const genre = song.genre || "";
-            const mood = song.mood || "";
-            const safeTitle = song.title.replace(/'/g, "\\'");
-            return `
-                <div class="song" id="card-${song.id}" data-title="${song.title}">
-                    <div class="card-img-wrap">
-                        <button class="fav-btn" onclick="toggleFavorite('${song.id}', this)">💜</button>
-                        <div class="card-overlay">
-                            <button class="card-play-btn" onclick="playCard('${song.id}','${safeTitle}')">▶</button>
-                        </div>
-                        <span class="duration-badge" id="dur-${song.id}">—</span>
-                        ${song.imageUrl
-                    ? `<img src="${song.imageUrl}" alt="${song.title}">`
-                    : `<div class="no-image">🎵</div>`}
-                    </div>
-                    <div class="song-info">
-                        <strong>${song.title}</strong>
-                        <span class="artist">${song.artist}</span>
-                        <div class="song-tags">
-                            ${genre ? `<span class="tag">${genre}</span>` : ''}
-                            ${mood ? `<span class="tag">${mood}</span>` : ''}
-                        </div>
-                    </div>
-                </div>`;
+        /* ════════════════════════════════
+           TAB SWITCHING
+        ════════════════════════════════ */
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById("tab-favs").classList.toggle("active", tab === "favorites");
+            document.getElementById("tab-playlists").classList.toggle("active", tab === "playlists");
+            document.getElementById("view-favorites").style.display = tab === "favorites" ? "" : "none";
+            document.getElementById("view-playlists").style.display = tab === "playlists" ? "" : "none";
+            document.getElementById("search").value = "";
+            if (tab === "playlists") loadPlaylists();
         }
 
-        /* ── pre-load durations for all cards ── */
-        function loadDurations(songs) {
-            songs.forEach(song => {
-                const probe = new Audio(`audio/${song.title}.mp3`);
-                probe.preload = "metadata";
-                probe.addEventListener("loadedmetadata", () => {
-                    const el = document.getElementById(`dur-${song.id}`);
-                    if (el) el.textContent = fmt(probe.duration);
-                });
-            });
+        /* ════════════════════════════════
+           SEARCH
+        ════════════════════════════════ */
+        function onSearch() {
+            if (currentTab === "favorites") searchFavorites();
+            else filterPlaylists();
         }
 
-        /* ── load library ── */
-        let allFavorites = [];
-
-        function renderCards(songs) {
-            const libraryDiv = document.getElementById("library");
-            if (!songs || songs.length === 0) {
-                libraryDiv.innerHTML = '<p class="state-msg">No saved songs yet — go browse and add some! 🎵</p>';
-                return;
-            }
-            libraryDiv.innerHTML = songs.map(buildCard).join("");
-            loadDurations(songs);
-            // re-apply playing state if still playing
-            if (currentPlayingTitle) refreshPlayingState();
-        }
-
-        function loadLibrary() {
+        /* ════════════════════════════════
+           FAVORITES
+        ════════════════════════════════ */
+        function loadFavorites() {
             document.getElementById("library").innerHTML = '<p class="state-msg">Loading…</p>';
-            fetch(`http://localhost:8080/api/songs/favorites/${currentUser}`)
+            fetch(`${API_BASE}/favorites/${currentUser}`)
                 .then(r => r.json())
                 .then(data => {
                     allFavorites = data;
                     document.getElementById("fav-count").textContent =
                         `${data.length} favorite${data.length !== 1 ? 's' : ''}`;
-                    renderCards(data);
+                    renderFavCards(data);
                 })
                 .catch(() => {
                     document.getElementById("library").innerHTML =
@@ -193,49 +432,314 @@
                 });
         }
 
-        /* ── search ── */
-        function searchLibrary() {
+        function searchFavorites() {
             const q = document.getElementById("search").value.toLowerCase().trim();
-            if (!q) { renderCards(allFavorites); return; }
-            const filtered = allFavorites.filter(s =>
-                (s.title || "").toLowerCase().includes(q) ||
+            if (!q) { renderFavCards(allFavorites); return; }
+            renderFavCards(allFavorites.filter(s =>
+                (s.title  || "").toLowerCase().includes(q) ||
                 (s.artist || "").toLowerCase().includes(q) ||
-                (s.genre || "").toLowerCase().includes(q) ||
-                (s.mood || "").toLowerCase().includes(q)
-            );
-            renderCards(filtered);
+                (s.genre  || "").toLowerCase().includes(q) ||
+                (s.mood   || "").toLowerCase().includes(q)
+            ));
         }
 
-        /* ── play a card ── */
-        function playCard(songId, songTitle) {
-            // toggle pause if same song
-            if (currentPlayingTitle === songTitle) {
-                togglePlayerPlayPause();
+        function renderFavCards(songs) {
+            const container = document.getElementById("library");
+            if (!songs || songs.length === 0) {
+                container.innerHTML = '<p class="state-msg">No saved songs yet — go browse and add some! 🎵</p>';
                 return;
             }
+            container.innerHTML = songs.map(s => buildFavCard(s)).join("");
+            loadDurations(songs, "fav");
+            if (currentPlayingTitle) refreshPlayingState();
+        }
 
-            // find the song object so we can show artist / art in mini player
-            const song = allFavorites.find(s => s.title === songTitle) || { title: songTitle, artist: "" };
-            currentPlayingSong = song;
+        function buildFavCard(song) {
+            const genre     = song.genre || "";
+            const mood      = song.mood  || "";
+            const safeTitle = song.title.replace(/'/g, "\\'");
+            return `
+                <div class="song" id="fav-card-${song.id}" data-title="${song.title}">
+                    <div class="card-img-wrap">
+                        <button class="fav-btn" onclick="removeFavorite('${song.id}', this)">💜</button>
+                        <div class="card-overlay">
+                            <button class="card-play-btn" onclick="playFromList('${song.id}','${safeTitle}','favorites')">▶</button>
+                        </div>
+                        <span class="duration-badge" id="fav-dur-${song.id}">—</span>
+                        ${song.imageUrl
+                            ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                            : `<div class="no-image">🎵</div>`}
+                    </div>
+                    <div class="song-info">
+                        <strong>${song.title}</strong>
+                        <span class="artist">${song.artist}</span>
+                        <div class="song-tags">
+                            ${genre ? `<span class="tag">${genre}</span>` : ''}
+                            ${mood  ? `<span class="tag">${mood}</span>`  : ''}
+                        </div>
+                    </div>
+                </div>`;
+        }
 
-            // update audio
-            player.src = `audio/${songTitle}.mp3`;
-            player.play().catch(() => alert("Audio file not found: " + songTitle + ".mp3"));
-            currentPlayingTitle = songTitle;
+        async function removeFavorite(songId, btn) {
+            try {
+                await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=false`, {
+                    method: "PATCH"
+                });
+                showToast("Removed from Favorites 🤍");
+                const card = document.getElementById(`fav-card-${songId}`);
+                if (card) {
+                    card.style.opacity    = '0';
+                    card.style.transform  = 'scale(0.8)';
+                    card.style.transition = '0.3s';
+                    setTimeout(() => {
+                        card.remove();
+                        allFavorites = allFavorites.filter(s => s.id != songId);
+                        document.getElementById("fav-count").textContent =
+                            `${allFavorites.length} favorite${allFavorites.length !== 1 ? 's' : ''}`;
+                        if (allFavorites.length === 0)
+                            document.getElementById("library").innerHTML =
+                                '<p class="state-msg">No saved songs yet — go browse and add some! 🎵</p>';
+                    }, 300);
+                }
+            } catch (err) { showToast("Could not update favorite ❌"); }
+        }
 
-            // update mini-player info
-            document.getElementById("mp-title").textContent = song.title;
+        /* ════════════════════════════════
+           PLAYLISTS GRID
+        ════════════════════════════════ */
+        async function loadPlaylists() {
+            document.getElementById("playlist-grid").innerHTML = '<p class="state-msg">Loading…</p>';
+            try {
+                const r = await fetch(PLAYLIST_BASE + "/");
+                allPlaylists = await r.json();
+                filterPlaylists();
+            } catch(e) {
+                document.getElementById("playlist-grid").innerHTML =
+                    '<p class="state-msg">Failed to load playlists. Is the server running?</p>';
+            }
+        }
+
+        function filterPlaylists() {
+            const q = document.getElementById("search").value.toLowerCase().trim();
+            const filtered = q ? allPlaylists.filter(p => p.name.toLowerCase().includes(q)) : allPlaylists;
+            document.getElementById("playlist-count").textContent =
+                `${filtered.length} playlist${filtered.length !== 1 ? 's' : ''}`;
+            renderPlaylistGrid(filtered);
+        }
+
+        /* Build mosaic art: up to 4 album covers from the playlist's songs */
+        function buildMosaicArt(playlist) {
+            const songIds = playlist.songIds || [];
+            const imaged  = songIds
+                .map(id => allSongs.find(s => s.id == id))
+                .filter(s => s && s.imageUrl)
+                .slice(0, 4);
+
+            if (imaged.length === 0) {
+                return `<div class="mosaic-fallback">🎶</div>`;
+            }
+            if (imaged.length === 1) {
+                return `<img class="mosaic-single" src="${imaged[0].imageUrl}" alt="${imaged[0].title}">`;
+            }
+            // 2–4 images: fill a 2×2 grid, pad empties
+            const cells = Array.from({ length: 4 }, (_, i) =>
+                imaged[i]
+                    ? `<img src="${imaged[i].imageUrl}" alt="${imaged[i].title}">`
+                    : `<div class="mosaic-empty">🎵</div>`
+            ).join("");
+            return `<div class="mosaic-grid">${cells}</div>`;
+        }
+
+        function renderPlaylistGrid(playlists) {
+            const container = document.getElementById("playlist-grid");
+            if (!playlists || playlists.length === 0) {
+                container.innerHTML = '<p class="state-msg">No playlists yet — create one on the Browse page! 🎶</p>';
+                return;
+            }
+            container.innerHTML = playlists.map(p => {
+                const count     = p.songIds ? p.songIds.length : 0;
+                const isPrivate = p.isPrivate === true || p.private === true;
+                const badge     = isPrivate
+                    ? '<span class="privacy-badge badge-private">🔒 Private</span>'
+                    : '<span class="privacy-badge badge-public">🌐 Public</span>';
+                return `
+                    <div class="playlist-card" onclick="drillInto('${p.id}')">
+                        <div class="playlist-card-art">
+                            ${buildMosaicArt(p)}
+                            <span class="song-count-badge">${count} song${count !== 1 ? 's' : ''}</span>
+                            <div class="playlist-card-overlay">
+                                <button class="playlist-play-btn"
+                                    onclick="event.stopPropagation(); playPlaylistNow('${p.id}')">▶</button>
+                            </div>
+                        </div>
+                        <div class="playlist-card-info">
+                            <strong>${p.name}</strong>
+                            <div class="playlist-card-meta">${badge}</div>
+                        </div>
+                    </div>`;
+            }).join("");
+        }
+
+        /* ════════════════════════════════
+           DRILL-IN VIEW
+        ════════════════════════════════ */
+        function drillInto(playlistId) {
+            const playlist = allPlaylists.find(p => p.id == playlistId);
+            if (!playlist) return;
+
+            const songIds = playlist.songIds || [];
+            drillSongs = songIds.map(id => allSongs.find(s => s.id == id)).filter(Boolean);
+
+            document.getElementById("drill-name").textContent = playlist.name;
+            const isPrivate = playlist.isPrivate === true || playlist.private === true;
+            document.getElementById("drill-meta").textContent =
+                `${drillSongs.length} song${drillSongs.length !== 1 ? 's' : ''} · ${isPrivate ? '🔒 Private' : '🌐 Public'}`;
+
+            document.getElementById("playlist-grid-view").style.display  = "none";
+            document.getElementById("playlist-drill-view").style.display = "";
+
+            renderDrillCards(drillSongs);
+        }
+
+        function exitDrill() {
+            document.getElementById("playlist-drill-view").style.display = "none";
+            document.getElementById("playlist-grid-view").style.display  = "";
+            document.getElementById("search").value = "";
+            drillSongs = [];
+        }
+
+        function renderDrillCards(songs) {
+            const container = document.getElementById("drill-library");
+            if (!songs || songs.length === 0) {
+                container.innerHTML = '<p class="state-msg">No songs in this playlist yet — add some from Browse! 🎵</p>';
+                return;
+            }
+            container.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px;">
+                    ${songs.map(song => buildDrillCard(song)).join("")}
+                </div>`;
+            loadDurations(songs, "drill");
+            if (currentPlayingTitle) refreshPlayingState();
+        }
+
+        function buildDrillCard(song) {
+            const genre     = song.genre || "";
+            const mood      = song.mood  || "";
+            const safeTitle = song.title.replace(/'/g, "\\'");
+            const isFav     = allFavorites.some(f => f.id == song.id);
+            return `
+                <div class="song" id="drill-card-${song.id}" data-title="${song.title}">
+                    <div class="card-img-wrap">
+                        <button class="fav-btn" onclick="toggleDrillFavorite('${song.id}', this)">
+                            ${isFav ? '💜' : '🤍'}
+                        </button>
+                        <div class="card-overlay">
+                            <button class="card-play-btn" onclick="playFromList('${song.id}','${safeTitle}','drill')">▶</button>
+                        </div>
+                        <span class="duration-badge" id="drill-dur-${song.id}">—</span>
+                        ${song.imageUrl
+                            ? `<img src="${song.imageUrl}" alt="${song.title}">`
+                            : `<div class="no-image">🎵</div>`}
+                    </div>
+                    <div class="song-info">
+                        <strong>${song.title}</strong>
+                        <span class="artist">${song.artist}</span>
+                        <div class="song-tags">
+                            ${genre ? `<span class="tag">${genre}</span>` : ''}
+                            ${mood  ? `<span class="tag">${mood}</span>`  : ''}
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        async function toggleDrillFavorite(songId, btn) {
+            const isCurrentlyFav = btn.textContent.trim() === '💜';
+            const nextState = !isCurrentlyFav;
+            try {
+                await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=${nextState}`, {
+                    method: "PATCH"
+                });
+                btn.textContent = nextState ? '💜' : '🤍';
+                // Keep allFavorites in sync so switching tabs shows correct state
+                if (nextState) {
+                    const song = allSongs.find(s => s.id == songId);
+                    if (song && !allFavorites.some(f => f.id == songId)) allFavorites.push(song);
+                } else {
+                    allFavorites = allFavorites.filter(s => s.id != songId);
+                }
+                showToast(nextState ? "Added to Favorites! 💜" : "Removed from Favorites 🤍");
+            } catch(err) {
+                showToast("Error updating favorite ❌");
+            }
+        }
+
+        /* ════════════════════════════════
+           PLAYLIST PLAYBACK
+        ════════════════════════════════ */
+
+        /* ▶ button on the playlist card in the grid */
+        function playPlaylistNow(playlistId) {
+            const playlist = allPlaylists.find(p => p.id == playlistId);
+            if (!playlist || !playlist.songIds || playlist.songIds.length === 0) {
+                showToast("This playlist has no songs yet 🎵");
+                return;
+            }
+            const songs = playlist.songIds.map(id => allSongs.find(s => s.id == id)).filter(Boolean);
+            if (songs.length === 0) { showToast("No playable songs found 🎵"); return; }
+            drillSongs    = songs;
+            drillQueue    = [...songs];
+            drillQueueIdx = 0;
+            startSong(songs[0]);
+        }
+
+        /* ▶ Play All button inside the drill header */
+        function playAllDrill() {
+            if (!drillSongs || drillSongs.length === 0) {
+                showToast("No songs to play 🎵");
+                return;
+            }
+            drillQueue    = [...drillSongs];
+            drillQueueIdx = 0;
+            startSong(drillQueue[0]);
+        }
+
+        function startSong(song) {
+            currentPlayingSong  = song;
+            currentPlayingTitle = song.title;
+            player.src = `audio/${song.title}.mp3`;
+            player.play().catch(() => showToast("Audio file not found: " + song.title + ".mp3"));
+            document.getElementById("mp-title").textContent  = song.title;
             document.getElementById("mp-artist").textContent = song.artist || "";
             const artWrap = document.getElementById("mp-art-wrap");
             artWrap.innerHTML = song.imageUrl
                 ? `<img class="mp-art" src="${song.imageUrl}" alt="${song.title}">`
                 : `<div class="mp-art-placeholder">🎵</div>`;
-
             document.getElementById("mini-player").classList.add("visible");
             refreshPlayingState();
         }
 
-        /* ── mark active card, update button icons ── */
+        /* ════════════════════════════════
+           GENERAL PLAYBACK
+        ════════════════════════════════ */
+        function playFromList(songId, songTitle, source) {
+            if (currentPlayingTitle === songTitle) {
+                togglePlayerPlayPause();
+                return;
+            }
+            const list = source === "drill" ? drillSongs : allFavorites;
+            const song = list.find(s => s.title === songTitle) || { title: songTitle, artist: "" };
+
+            if (source === "drill") {
+                drillQueue    = [...drillSongs];
+                drillQueueIdx = drillQueue.findIndex(s => s.id == songId);
+            } else {
+                drillQueue    = [];
+                drillQueueIdx = -1;
+            }
+            startSong(song);
+        }
+
         function refreshPlayingState() {
             document.querySelectorAll(".song").forEach(card => {
                 const isThis = card.dataset.title === currentPlayingTitle;
@@ -246,115 +750,86 @@
             document.getElementById("mp-playpause").textContent = player.paused ? "▶" : "⏸";
         }
 
-        /* ── toggle from mini player ── */
         function togglePlayerPlayPause() {
             if (!currentPlayingTitle) return;
-            if (player.paused) { player.play(); } else { player.pause(); }
+            player.paused ? player.play() : player.pause();
         }
 
-        /* ── audio events ── */
-        player.addEventListener("play", refreshPlayingState);
+        player.addEventListener("play",  refreshPlayingState);
         player.addEventListener("pause", refreshPlayingState);
         player.addEventListener("ended", () => {
-            currentPlayingTitle = null;
-            refreshPlayingState();
-            document.getElementById("mp-fill").style.width = "0%";
-            document.getElementById("mp-current").textContent = "0:00";
+            // Auto-advance through playlist queue
+            if (drillQueue.length > 0 && drillQueueIdx < drillQueue.length - 1) {
+                drillQueueIdx++;
+                startSong(drillQueue[drillQueueIdx]);
+            } else {
+                currentPlayingTitle = null;
+                drillQueue    = [];
+                drillQueueIdx = -1;
+                refreshPlayingState();
+                document.getElementById("mp-fill").style.width    = "0%";
+                document.getElementById("mp-current").textContent = "0:00";
+            }
         });
-
         player.addEventListener("loadedmetadata", () => {
             document.getElementById("mp-total").textContent = fmt(player.duration);
         });
-
         player.addEventListener("timeupdate", () => {
             if (!player.duration) return;
             const pct = (player.currentTime / player.duration) * 100;
-            document.getElementById("mp-fill").style.width = pct + "%";
+            document.getElementById("mp-fill").style.width    = pct + "%";
             document.getElementById("mp-current").textContent = fmt(player.currentTime);
         });
 
-        /* ── seek ── */
         function seekTo(e) {
             if (!player.duration) return;
             const rect = e.currentTarget.getBoundingClientRect();
-            const pct = (e.clientX - rect.left) / rect.width;
-            player.currentTime = pct * player.duration;
+            player.currentTime = ((e.clientX - rect.left) / rect.width) * player.duration;
         }
-
-        /* ── volume ── */
-        function setVolume(v) {
-            player.volume = v;
-            isMuted = (v == 0);
-        }
+        function setVolume(v) { player.volume = v; isMuted = (v == 0); }
         function toggleMute() {
             isMuted = !isMuted;
             player.muted = isMuted;
             document.querySelector(".mp-vol-icon").textContent = isMuted ? "🔇" : "🔊";
         }
 
-        /* ── toggle favorite ── */
-        async function toggleFavorite(songId, btn) {
-    try {
-        // 1. Tell the server
-        await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=false`, {
-            method: "PATCH"
-        });
-
-        // 2. Show the toast immediately
-        showToast("Removed from Favorites 🤍");
-
-        // 3. Instead of loadLibrary(), just hide the card and update the local data
-        const card = document.getElementById(`card-${songId}`);
-        if (card) {
-            card.style.opacity = '0';
-            card.style.transform = 'scale(0.8)';
-            card.style.transition = '0.3s';
-            
-            setTimeout(() => {
-                card.remove(); // Remove it from the DOM
-                // Update the array so search still works correctly
-                allFavorites = allFavorites.filter(s => s.id != songId);
-                // Update the count text
-                document.getElementById("fav-count").textContent =
-                    `${allFavorites.length} favorite${allFavorites.length !== 1 ? 's' : ''}`;
-                
-                if (allFavorites.length === 0) {
-                    document.getElementById("library").innerHTML = 
-                        '<p class="state-msg">No saved songs yet — go browse and add some! 🎵</p>';
-                }
-            }, 300);
+        /* ════════════════════════════════
+           DURATION LOADER
+        ════════════════════════════════ */
+        function loadDurations(songs, prefix) {
+            songs.forEach(song => {
+                const probe = new Audio(`audio/${song.title}.mp3`);
+                probe.preload = "metadata";
+                probe.addEventListener("loadedmetadata", () => {
+                    const el = document.getElementById(`${prefix}-dur-${song.id}`);
+                    if (el) el.textContent = fmt(probe.duration);
+                });
+            });
         }
-    } catch (err) {
-        showToast("Could not update favorite ❌");
-    }
-}
 
-        let toastTimer; // Global variable to track the timer
+        /* ════════════════════════════════
+           HELPERS
+        ════════════════════════════════ */
+        function fmt(s) {
+            if (!isFinite(s) || isNaN(s)) return "—";
+            return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, "0")}`;
+        }
 
-function showToast(msg) {
-    const t = document.getElementById("toast");
-    if (!t) return;
+        let toastTimer;
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            if (!t) return;
+            clearTimeout(toastTimer);
+            t.textContent = msg;
+            t.classList.add("show");
+            toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+        }
 
-    // Clear any existing timer so they don't overlap
-    clearTimeout(toastTimer);
-
-    t.textContent = msg;
-    t.classList.add("show");
-
-    // Hide it after 3 seconds
-    toastTimer = setTimeout(() => {
-        t.classList.remove("show");
-    }, 3000);
-}
-
-        /* ── nav ── */
         function goToProfile() { window.location.href = "profile.html"; }
         function logout() {
             localStorage.removeItem("currentUser");
             window.location.href = "http://localhost:8080/index.html";
         }
     </script>
-    <div id="toast"></div>
 </body>
-
 </html>
