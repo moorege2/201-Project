@@ -385,8 +385,8 @@
     <div id="toast"></div>
 
     <script>
-        const API_BASE = "https://music-player-m56j.onrender.com/api/songs";
-        const PLAYLIST_BASE = "https://music-player-m56j.onrender.com/api/playlists";
+        const API_BASE = "http://localhost:8080/api/songs";
+        const PLAYLIST_BASE = "http://localhost:8080/api/playlists";
         const player = new Audio();
         let currentPlayingTitle = null;
         let selectedSongId = null;
@@ -418,7 +418,7 @@
                 allSongs = await res.json();
 
                 // Gets user favorites to show correct heart state
-                const favRes = await fetch(`https://music-player-m56j.onrender.com/api/songs/favorites/${currentUser}`);
+                const favRes = await fetch(`http://localhost:8080/api/songs/favorites/${currentUser}`);
                 userFavorites = await favRes.json();
 
                 renderCards(allSongs);
@@ -642,7 +642,7 @@
             const nextState = !isCurrentlyFav;
 
             try {
-                await fetch(`https://music-player-m56j.onrender.com/api/users/${currentUser}/favorites/${songId}?isFavorite=${nextState}`, {
+                await fetch(`http://localhost:8080/api/users/${currentUser}/favorites/${songId}?isFavorite=${nextState}`, {
                     method: "PATCH"
                 });
 
@@ -650,7 +650,7 @@
                 btn.textContent = nextState ? '💜' : '🤍';
 
                 // Refresh our local favorites list
-                const favRes = await fetch(`https://music-player-m56j.onrender.com/api/songs/favorites/${currentUser}`);
+                const favRes = await fetch(`http://localhost:8080/api/songs/favorites/${currentUser}`);
                 userFavorites = await favRes.json();
 
                 showToast(nextState ? "Added to Favorites! 💜" : "Removed from Favorites 🤍");
