@@ -143,7 +143,7 @@
             const password = document.getElementById("password").value;
 
             // Sends to backend 
-            fetch("https://music-player-m56j.onrender.com/api/users/register", {
+            fetch("http://localhost:8080/api/users/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password })
