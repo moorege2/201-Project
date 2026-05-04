@@ -125,7 +125,7 @@
 
             // Changes color depending on success or error
             t.style.background = isError ? "#e74c3c" : "#372554"; // Red for error, Purple for success
-            
+
             // Shows toast
             t.classList.add("show");
 
@@ -165,12 +165,12 @@
                     }
                 })
                 .catch(err => {
-                    showToast("Server connection failed. ❌", true);
+                    showToast("Server is waking up, please wait 30 seconds and try again. ⏳", true);
                 });
 
             return false;
         }
-        
+
     </script>
 
 </body>
